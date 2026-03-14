@@ -53,9 +53,10 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--bg);colo
 .vd{width:1px;height:20px;background:var(--brd);flex-shrink:0}
 #filters{display:flex;gap:4px;overflow-x:auto;flex:1;min-width:0;scrollbar-width:none;padding-bottom:1px}
 #filters::-webkit-scrollbar{display:none}
-.fbtn{flex-shrink:0;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;padding:4px 10px;border-radius:999px;border:1px solid var(--brd);background:transparent;color:var(--tx2);cursor:pointer;transition:all .13s;white-space:nowrap}
-.fbtn:hover{border-color:var(--brd2);color:var(--tx);background:var(--sur2)}
-.fbtn.active{background:var(--tx);border-color:var(--tx);color:#111}
+.fbtn{flex-shrink:0;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;padding:4px 10px;border-radius:999px;border:1px solid var(--brd);background:transparent;color:var(--tx2);cursor:pointer;transition:all .2s cubic-bezier(.25,1,.35,1);white-space:nowrap}
+.fbtn:hover{border-color:var(--brd2);color:var(--tx);background:var(--sur2);transform:translateY(-1px)}
+.fbtn:active{transform:scale(.94)}
+.fbtn.active{background:var(--tx);border-color:var(--tx);color:#111;transform:scale(1.02)}
 .fbtn.star-btn.active{background:var(--acc);border-color:var(--acc);color:#fff}
 .fbtn.city-btn.active{background:#2a6496;border-color:#2a6496;color:#fff}
 .fbtn.nocarro-btn.active{background:#8B4513;border-color:#8B4513;color:#fff}
@@ -70,9 +71,10 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--bg);colo
 .sb-lbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.9px;color:var(--tx3)}
 #jcount{font-size:11px;font-weight:600;background:var(--sur2);color:var(--tx2);padding:2px 9px;border-radius:999px}
 #jlist{flex:1;overflow-y:auto;padding:6px;display:flex;flex-direction:column;gap:4px;scrollbar-width:thin;scrollbar-color:var(--brd) transparent}
-.jcard{padding:10px 12px 10px;border:1px solid var(--brd);border-radius:var(--r);cursor:pointer;transition:all .13s;background:var(--sur);position:relative}
-.jcard:hover{border-color:var(--brd2);box-shadow:var(--sh);transform:translateY(-1px)}
-.jcard.active{border-color:var(--acc);box-shadow:0 0 0 2px rgba(224,90,74,.15)}
+.jcard{padding:10px 12px 10px;border:1px solid var(--brd);border-radius:var(--r);cursor:pointer;transition:transform .22s cubic-bezier(.25,1,.35,1),box-shadow .22s,border-color .22s,background .18s,opacity .2s;background:var(--sur);position:relative;will-change:transform;animation:pu .3s cubic-bezier(.25,1,.35,1) both}
+.jcard:active{transform:scale(.96);box-shadow:none}
+.jcard:hover{border-color:var(--brd2);box-shadow:0 4px 20px rgba(0,0,0,.25);transform:translateY(-2px)}
+.jcard.active{border-color:var(--acc);box-shadow:0 0 0 2px rgba(224,90,74,.2),0 4px 20px rgba(224,90,74,.1);transform:translateY(-1px)}
 .jc-h{display:flex;align-items:flex-start;justify-content:space-between;gap:6px;margin-bottom:2px}
 .jc-ttl{font-size:12px;font-weight:600;color:var(--tx);line-height:1.3;flex:1}
 .jc-sals{text-align:right;flex-shrink:0}
@@ -103,7 +105,11 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--bg);colo
 .dark-tiles{filter:invert(100%) hue-rotate(180deg) brightness(88%) contrast(88%) saturate(.7)}
 #det{position:fixed;bottom:14px;left:390px;width:min(470px,calc(100vw - 404px));background:var(--sur);border:1px solid var(--brd2);border-radius:14px;box-shadow:var(--sh-lg);padding:15px 17px 13px;z-index:600;display:none;animation:pu .17s ease;max-height:calc(100vh - 28px);overflow-y:auto}
 @keyframes slideup{from{transform:translateY(100%);opacity:0}to{transform:translateY(0);opacity:1}}
-@keyframes pu{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slidedown{from{transform:translateY(0);opacity:1}to{transform:translateY(110%);opacity:0}}
+@keyframes pu{from{opacity:0;transform:translateY(14px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes fadein{from{opacity:0}to{opacity:1}}
+@keyframes popin{from{opacity:0;transform:scale(.88)}to{opacity:1;transform:scale(1)}}
+@keyframes shimmer{0%{background-position:-400px 0}100%{background-position:400px 0}}
 #det.open{display:block}
 #det-x{position:absolute;top:10px;right:11px;width:24px;height:24px;border-radius:50%;background:var(--sur2);border:none;font-size:13px;color:var(--tx2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .1s}
 #det-x:hover{background:var(--brd)}
@@ -152,7 +158,7 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--bg);colo
 /* MODALS */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:1000;display:none;align-items:center;justify-content:center;padding:20px}
 .modal-overlay.open{display:flex}
-.modal-box{background:var(--sur);border:1px solid var(--brd2);border-radius:16px;width:100%;max-width:560px;max-height:85vh;display:flex;flex-direction:column;box-shadow:var(--sh-lg);animation:pu .2s ease}
+.modal-box{background:var(--sur);border:1px solid var(--brd2);border-radius:16px;width:100%;max-width:560px;max-height:85vh;display:flex;flex-direction:column;box-shadow:var(--sh-lg);animation:popin .25s cubic-bezier(.25,1,.35,1)}
 .modal-hdr{padding:14px 16px 10px;border-bottom:1px solid var(--brd);display:flex;align-items:flex-start;justify-content:space-between;flex-shrink:0}
 .modal-hdr h3{font-family:'DM Serif Display',serif;font-size:16px;color:var(--tx);margin-bottom:2px}
 .modal-hdr p{font-size:11px;color:var(--tx3)}
@@ -196,8 +202,8 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--bg);colo
 .travel-dist{font-size:10px;color:var(--tx3)}
 .travel-cost{font-size:10px;color:var(--mid);margin-top:3px}
 /* FAVORITES PANEL */
-#fav-panel{position:fixed;top:54px;right:0;bottom:0;z-index:800;width:380px;background:var(--sur);border-left:1px solid var(--brd);display:none;flex-direction:column;box-shadow:-4px 0 20px rgba(0,0,0,.3);animation:sl .2s ease}
-@keyframes sl{from{transform:translateX(30px);opacity:0}to{transform:translateX(0);opacity:1}}
+#fav-panel{position:fixed;top:54px;right:0;bottom:0;z-index:800;width:380px;background:var(--sur);border-left:1px solid var(--brd);display:none;flex-direction:column;box-shadow:-4px 0 20px rgba(0,0,0,.3);animation:sl .25s cubic-bezier(.25,1,.35,1)}
+@keyframes sl{from{transform:translateX(40px);opacity:0}to{transform:translateX(0);opacity:1}}
 #fav-panel.open{display:flex}
 .panel-hdr{padding:13px 15px 9px;border-bottom:1px solid var(--brd);flex-shrink:0;position:relative;display:flex;align-items:flex-start;justify-content:space-between}
 .panel-hdr-text h2{font-family:'DM Serif Display',serif;font-size:15px;color:var(--tx);margin-bottom:2px}
@@ -518,17 +524,19 @@ button,a,[onclick]{touch-action:manipulation;-webkit-tap-highlight-color:transpa
     justify-content:center;gap:4px;background:none;border:none;
     color:var(--tx3);font-family:'DM Sans',sans-serif;font-size:9.5px;
     font-weight:600;cursor:pointer;letter-spacing:.2px;
-    transition:color .15s;padding:0;position:relative
+    transition:color .2s cubic-bezier(.25,1,.35,1);padding:0;position:relative
   }
-  .mob-nav-btn:active{opacity:.6;transform:scale(.92)}
+  .mob-nav-btn:active{opacity:.7;transform:scale(.88);transition:transform .1s}
   .mob-nav-btn.active{color:var(--acc)}
-  .mob-nav-btn.active .nav-icon-wrap{background:var(--acc-bg)}
+  .mob-nav-btn.active .nav-icon-wrap{background:var(--acc-bg);transform:scale(1.08)}
   .nav-icon-wrap{
     width:44px;height:28px;border-radius:10px;
     display:flex;align-items:center;justify-content:center;
-    transition:background .15s;background:transparent
+    transition:background .2s cubic-bezier(.25,1,.35,1), transform .2s cubic-bezier(.25,1,.35,1);
+    background:transparent
   }
-  .mob-nav-btn .ni{font-size:20px;line-height:1}
+  .mob-nav-btn .ni{font-size:20px;line-height:1;transition:transform .2s cubic-bezier(.25,1,.35,1)}
+  .mob-nav-btn.active .ni{transform:scale(1.12)}
   .mob-nav-badge{
     position:absolute;top:4px;right:calc(50% - 20px);
     background:var(--acc);color:#fff;font-size:9px;font-weight:700;
@@ -543,15 +551,17 @@ button,a,[onclick]{touch-action:manipulation;-webkit-tap-highlight-color:transpa
   #mob-map-exit{
     position:absolute;top:16px;right:16px;z-index:700;
     width:52px;height:52px;border-radius:50%;
-    background:var(--sur);border:2px solid var(--brd2);
-    box-shadow:0 4px 20px rgba(0,0,0,.7);
-    font-size:22px;color:var(--tx);cursor:pointer;
+    background:var(--sur);
+    border:1.5px solid rgba(255,255,255,.12);
+    box-shadow:0 6px 24px rgba(0,0,0,.7), 0 2px 8px rgba(0,0,0,.4);
+    font-size:20px;color:var(--tx);cursor:pointer;
     display:none;align-items:center;justify-content:center;
-    transition:transform .15s,background .15s;
-    font-weight:500;line-height:1
+    transition:transform .18s cubic-bezier(.25,1,.35,1), background .18s;
+    font-weight:400;line-height:1;
+    animation:popin .3s cubic-bezier(.16,1,.3,1);
   }
   #mob-map-exit.visible{display:flex}
-  #mob-map-exit:active{transform:scale(.88);background:var(--acc-bg)}
+  #mob-map-exit:active{transform:scale(.88);background:var(--sur2)}
 
   /* ── DET BOTTOM SHEET — sobre el mapa en móvil ── */
   #det{
@@ -560,29 +570,53 @@ button,a,[onclick]{touch-action:manipulation;-webkit-tap-highlight-color:transpa
     left:0 !important;
     right:0 !important;
     width:100% !important;
-    max-height:82vh !important;
+    max-height:84vh !important;
     overflow-y:auto !important;
-    border-radius:20px 20px 0 0 !important;
+    border-radius:24px 24px 0 0 !important;
     border:none !important;
-    border-top:1px solid var(--brd2) !important;
+    border-top:1px solid rgba(255,255,255,.06) !important;
     z-index:960 !important;
-    padding:0 16px calc(24px + env(safe-area-inset-bottom)) !important;
-    animation:slideup .28s cubic-bezier(.25,1,.35,1) !important;
+    padding:0 16px calc(28px + env(safe-area-inset-bottom)) !important;
+    animation:slideup .38s cubic-bezier(.16,1,.3,1) !important;
     -webkit-overflow-scrolling:touch;
-    box-shadow:0 -12px 48px rgba(0,0,0,.65) !important;
+    box-shadow:0 -20px 70px rgba(0,0,0,.75),0 -1px 0 rgba(255,255,255,.06) !important;
+    will-change:transform;
+  }
+  #det.closing{
+    animation:slidedown .28s cubic-bezier(.4,0,.6,1) forwards !important;
   }
   #det::before{
     content:'';
     display:block;
     width:36px;height:4px;
-    border-radius:2px;
-    background:var(--brd2);
-    margin:12px auto 16px;
+    border-radius:4px;
+    background:rgba(255,255,255,.18);
+    margin:14px auto 16px;
     position:sticky;top:0;
+    flex-shrink:0;
   }
   #det-x{ display:none !important; }
-  /* Sin backdrop — el mapa hace de fondo */
   #det-backdrop{ display:none !important; }
+
+  /* Botones de acción — más grandes y táctiles en móvil */
+  .d-act-btn{
+    min-height:52px !important;
+    border-radius:14px !important;
+    font-size:12px !important;
+    flex-direction:column !important;
+    gap:3px !important;
+    padding:10px 6px !important;
+    transition:transform .15s cubic-bezier(.25,1,.35,1), opacity .15s !important;
+  }
+  .d-act-btn:active{ transform:scale(.93) !important; opacity:.8 !important; }
+
+  /* Botones de aplicar — pantalla completa en móvil */
+  .d-apply-btn{
+    flex:1 !important;
+    min-height:48px !important;
+    font-size:14px !important;
+    border-radius:14px !important;
+  }
 
   /* Recon */
   .api-warn{font-size:13px;padding:12px 14px;border-radius:12px}
@@ -622,6 +656,52 @@ button,a,[onclick]{touch-action:manipulation;-webkit-tap-highlight-color:transpa
 .ai-tag.blue{background:#18223a;color:var(--blu);border-color:#2a3a5a}
 .salary-score{text-align:center;font-size:28px;font-weight:700;color:var(--mid);margin:8px 0}
 .chat-wrap{height:280px;overflow-y:auto;padding:8px;background:var(--sur2);border-radius:10px;margin-bottom:10px}
+/* ── TUTORIAL ── */
+#tut-overlay{position:fixed;inset:0;z-index:9000;pointer-events:none;display:none}
+#tut-overlay.active{pointer-events:all;display:block}
+#tut-hole{position:fixed;border-radius:14px;box-shadow:0 0 0 9999px rgba(0,0,0,.78);z-index:9002;transition:all .45s cubic-bezier(.16,1,.3,1);pointer-events:none}
+#tut-card{
+  position:fixed;z-index:9003;
+  background:var(--sur);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:20px;
+  padding:20px 20px 16px;
+  width:min(300px,calc(100vw - 32px));
+  box-shadow:0 24px 80px rgba(0,0,0,.7), 0 0 0 1px rgba(255,255,255,.05);
+  transition:all .42s cubic-bezier(.16,1,.3,1);
+  animation:popin .35s cubic-bezier(.16,1,.3,1);
+}
+#tut-card .tut-emoji{font-size:32px;margin-bottom:10px;display:block;animation:popin .4s cubic-bezier(.16,1,.3,1) .05s both}
+#tut-card .tut-step{font-size:10px;color:var(--tx3);margin-bottom:5px;font-weight:600;text-transform:uppercase;letter-spacing:.8px}
+#tut-card .tut-title{font-size:16px;font-weight:700;color:var(--tx);margin-bottom:7px;line-height:1.3}
+#tut-card .tut-body{font-size:13px;color:var(--tx2);line-height:1.65;margin-bottom:14px}
+#tut-card .tut-dots{display:flex;gap:5px;margin-bottom:14px;align-items:center}
+#tut-card .tut-dot{width:6px;height:6px;border-radius:50%;background:var(--brd2);transition:all .3s cubic-bezier(.25,1,.35,1)}
+#tut-card .tut-dot.act{background:var(--acc);width:22px;border-radius:3px}
+#tut-card .tut-btns{display:flex;gap:8px;justify-content:space-between;align-items:center}
+#tut-card .tut-skip{background:none;border:none;color:var(--tx3);font-size:12px;cursor:pointer;padding:6px 4px;font-family:'DM Sans',sans-serif;transition:color .15s}
+#tut-card .tut-skip:active{color:var(--tx)}
+#tut-card .tut-next{
+  background:var(--acc);color:white;border:none;
+  border-radius:12px;padding:10px 22px;
+  font-size:13px;font-weight:700;cursor:pointer;
+  font-family:'DM Sans',sans-serif;flex:1;text-align:center;
+  transition:transform .15s cubic-bezier(.25,1,.35,1), opacity .15s;
+  box-shadow:0 4px 14px rgba(224,90,74,.4);
+}
+#tut-card .tut-next:active{transform:scale(.95);opacity:.9}
+#tut-btn{
+  position:fixed;
+  bottom:calc(82px + env(safe-area-inset-bottom));
+  right:14px;z-index:800;
+  width:40px;height:40px;border-radius:50%;
+  background:var(--sur);border:1px solid var(--brd2);
+  box-shadow:0 4px 16px rgba(0,0,0,.45);
+  font-size:16px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;color:var(--tx);
+  transition:transform .15s cubic-bezier(.25,1,.35,1);
+}
+#tut-btn:active{transform:scale(.9)}
 </style>
 <body>
 <div id="hdr">
@@ -919,7 +999,39 @@ var JOBS = [
 {"id":73,"title":"Auxiliar programación web (sin exp.)","company":"Emplea Talento · Sevilla","sector":"Tecnología","salary":1200,"difficulty":"medium","barrier":"media","barrierScore":2,"diffScore":2,"star":false,"ciudad":"Sevilla","nocarro":true,"lat":37.3886,"lng":-5.9820,"verified":true,"desc":"Contrato de Formación en Alternancia. Sin experiencia. Presencial, jornada completa.","transferable":"Reconversión al sector digital. Empresa forma desde cero.","tags":["✓ Verificado","Contrato Formación","Sin experiencia"]},
 {"id":74,"title":"Mozo/a recepciones 40h (Pampling)","company":"Grupo Pampling · Sevilla","sector":"Logística","salary":1500,"difficulty":"easy","barrier":"baja","barrierScore":1,"diffScore":1,"star":false,"ciudad":"Sevilla","nocarro":false,"lat":37.3886,"lng":-5.9815,"verified":true,"desc":"Recepción de mercancía y apoyo logístico. 40h semanales en empresa textil con 100+ puntos de venta en Europa.","transferable":"Sin requisitos específicos.","tags":["✓ Verificado","40h","Pampling"]},
 {"id":75,"title":"Auxiliar montaje y desmontaje eventos","company":"Empresa eventos · Sevilla","sector":"Eventos","salary":1040,"difficulty":"easy","barrier":"baja","barrierScore":1,"diffScore":1,"star":false,"ciudad":"Sevilla","nocarro":false,"lat":37.3886,"lng":-5.9823,"verified":false,"desc":"Montaje/desmontaje de estructuras. 8 €/hora neto. Trabajo puntual por días.","transferable":"Sin requisitos. Trabajo físico en equipo.","tags":["8 € neto/hora","Puntual","Sin experiencia"]},
-{"id":76,"title":"Oposición Subalterno/a Junta (16 plazas)","company":"Junta de Andalucía · Sevilla","sector":"Adm. Pública","salary":1350,"difficulty":"medium","barrier":"media","barrierScore":2,"diffScore":2,"star":true,"ciudad":"Sevilla","nocarro":true,"lat":37.3886,"lng":-5.9918,"verified":true,"desc":"16 plazas de Subalterno en la Junta de Andalucía. Salario entre 1.300 y 1.400 €. Oposición con examen único eliminatorio.","transferable":"Titulación universitaria da puntos en los baremos. Gran estabilidad laboral.","tags":["✓ Verificado","16 plazas","Empleo público","Examen único"]}
+{"id":76,"title":"Oposición Subalterno/a Junta (16 plazas)","company":"Junta de Andalucía · Sevilla","sector":"Adm. Pública","salary":1350,"difficulty":"medium","barrier":"media","barrierScore":2,"diffScore":2,"star":true,"ciudad":"Sevilla","nocarro":true,"lat":37.3886,"lng":-5.9918,"verified":true,"desc":"16 plazas de Subalterno en la Junta de Andalucía. Salario entre 1.300 y 1.400 €. Oposición con examen único eliminatorio.","transferable":"Titulación universitaria da puntos en los baremos. Gran estabilidad laboral.","tags":["✓ Verificado","16 plazas","Empleo público","Examen único"]},
+{"id":77,"title":"Operario/a línea producción Cruzcampo","company":"Heineken España · Dos Hermanas","sector":"Industria","salary":1680,"difficulty":"easy","barrier":"baja","barrierScore":1,"diffScore":1,"star":false,"ciudad":"Sevilla","nocarro":false,"lat":37.3010,"lng":-5.9320,"verified":true,"desc":"Operario/a en línea de producción de la fábrica Cruzcampo. Turnos rotativos 3x8. Contrato indefinido desde el primer día. Empresa líder del sector.","transferable":"Trabajo en equipo bajo presión, protocolos estrictos de higiene — transferible desde sanidad.","tags":["✓ Verificado","Indefinido","3x8 turnos","Heineken"]},
+{"id":78,"title":"Auxiliar clínica veterinaria","company":"Clínica Veterinaria San Francisco · Jerez","sector":"Sanidad animal","salary":1200,"difficulty":"easy","barrier":"baja","barrierScore":1,"diffScore":1,"star":true,"ciudad":"Jerez","nocarro":false,"lat":36.6920,"lng":-6.1385,"verified":true,"desc":"Auxiliar en clínica veterinaria. Asistencia en consultas, esterilización de material, atención al cliente. Jornada completa L-V + sábados mañana.","transferable":"Técnicas sanitarias, esterilización, atención al paciente — perfil enfermería ideal.","tags":["✓ Verificado","L-V + sáb","Sector sanitario"]},
+{"id":79,"title":"Repartidor/a Amazon Flex Sevilla","company":"Amazon Logistics · Sevilla Sur","sector":"Logística","salary":1450,"difficulty":"easy","barrier":"baja","barrierScore":1,"diffScore":1,"star":false,"ciudad":"Sevilla","nocarro":false,"lat":37.3100,"lng":-5.9710,"verified":true,"desc":"Repartidor/a para Amazon en Sevilla. Rutas de 4-5h. Carnet B requerido. Pago semanal garantizado. Flexibilidad horaria total.","transferable":"Sin requisitos de formación.","tags":["✓ Verificado","Pago semanal","Flexible","Carnet B"]},
+{"id":80,"title":"Recepcionista centro médico","company":"Vithas Quirón · Jerez de la Frontera","sector":"Sanidad","salary":1350,"difficulty":"easy","barrier":"baja","barrierScore":1,"diffScore":1,"star":true,"ciudad":"Jerez","nocarro":false,"lat":36.6850,"lng":-6.1320,"verified":true,"desc":"Recepcionista en centro médico privado. Cita previa, admisión de pacientes, facturación. L-V jornada completa. Empresa con 30 hospitales en España.","transferable":"Trato con pacientes, terminología médica, gestión bajo presión — perfecto para enfermería.","tags":["✓ Verificado","Centro médico","Vithas","L-V"]},
+{"id":81,"title":"Auxiliar de ayuda a domicilio SAD","company":"DomusVi · Jerez de la Frontera","sector":"Atención sociosanitaria","salary":1280,"difficulty":"easy","barrier":"baja","barrierScore":1,"diffScore":1,"star":true,"ciudad":"Jerez","nocarro":false,"lat":36.6780,"lng":-6.1290,"verified":true,"desc":"Auxiliar SAD en Jerez. Asistencia a personas mayores o con dependencia en sus domicilios. Empresa líder en atención sociosanitaria en España.","transferable":"Cuidados básicos, higiene, movilización — transferencia directa desde enfermería.","tags":["✓ Verificado","Perfil sanitario","DomusVi","SAD"]},
+{"id":82,"title":"Monitor/a comedor escolar","company":"Seralia · Colegios Jerez","sector":"Educación","salary":700,"difficulty":"easy","barrier":"baja","barrierScore":1,"diffScore":1,"star":false,"ciudad":"Jerez","nocarro":false,"lat":36.6860,"lng":-6.1350,"verified":true,"desc":"Monitor/a de comedor en varios colegios de Jerez. Horario de 12:00 a 16:00. Compatible con otro trabajo. Contrato sept-junio.","transferable":"Trato con menores, resolución de conflictos, responsabilidad.","tags":["✓ Verificado","12h-16h","Compatible","Sept-Jun"]},
+{"id":83,"title":"Carnicero/a Mercadona","company":"Mercadona · Jerez Norte","sector":"Retail","salary":1500,"difficulty":"easy","barrier":"baja","barrierScore":1,"diffScore":1,"star":false,"ciudad":"Jerez","nocarro":false,"lat":36.7050,"lng":-6.1410,"verified":true,"desc":"Carnicero/a en Mercadona Jerez. Corte, preparación y atención al cliente en charcutería. Formación interna a cargo de la empresa. Contrato indefinido.","transferable":"Sin experiencia previa necesaria — empresa forma desde cero.","tags":["✓ Verificado","Indefinido","Mercadona","Formación interna"]},
+{"id":84,"title":"Técnico/a mantenimiento edificios","company":"Grupo EULEN · Jerez y provincia","sector":"Mantenimiento","salary":1600,"difficulty":"medium","barrier":"media","barrierScore":2,"diffScore":2,"star":false,"ciudad":"Jerez","nocarro":false,"lat":36.6950,"lng":-6.1300,"verified":true,"desc":"Técnico/a mantenimiento de instalaciones en edificios y colegios. Electricidad básica, fontanería, climatización. Carnet B. Empresa multinacional.","transferable":"Atención a protocolos, trabajo bajo normas de seguridad — perfil sanitario adaptable.","tags":["✓ Verificado","EULEN","Carnet B","Instalaciones"]},
+{"id":85,"title":"Conductor/a autobús urbano Jerez","company":"Comes · Jerez de la Frontera","sector":"Transporte","salary":1750,"difficulty":"medium","barrier":"media","barrierScore":2,"diffScore":2,"star":false,"ciudad":"Jerez","nocarro":false,"lat":36.6870,"lng":-6.1395,"verified":true,"desc":"Conductor/a de autobús urbano en Jerez. Carnet D + CAP requerido o posibilidad de obtenerlo con ayuda de la empresa. Turnos rotativos.","transferable":"Responsabilidad con personas, gestión de situaciones imprevistas.","tags":["✓ Verificado","Carnet D+CAP","Ayuda formación","Comes"]},
+{"id":86,"title":"Operario/a limpieza industrial","company":"Limpiezas Tomás · Polígono Jerez","sector":"Limpieza","salary":1260,"difficulty":"easy","barrier":"baja","barrierScore":1,"diffScore":1,"star":false,"ciudad":"Jerez","nocarro":false,"lat":36.6750,"lng":-6.1200,"verified":true,"desc":"Operario/a de limpieza en nave industrial y oficinas. Turno de mañana 06:00-14:00. Contrato estable. Empresa local con más de 15 años en Jerez.","transferable":"Protocolos de higiene y desinfección — directamente aplicables desde sanidad.","tags":["✓ Verificado","Turno mañana","Estable","Local"]},
+{"id":87,"title":"Socorrista piscina municipal","company":"Ayuntamiento de Jerez · Instalaciones deportivas","sector":"Deporte","salary":1300,"difficulty":"medium","barrier":"media","barrierScore":2,"diffScore":2,"star":true,"ciudad":"Jerez","nocarro":false,"lat":36.6830,"lng":-6.1450,"verified":true,"desc":"Socorrista para piscinas municipales de Jerez. Temporada verano + posibilidad de continuidad. Titulación socorrismo acuático requerida o valorada.","transferable":"RCP, primeros auxilios, gestión de emergencias — núcleo de la formación sanitaria.","tags":["✓ Verificado","Verano","Ayuntamiento","RCP requerido"]},
+{"id":88,"title":"Reponedor/a supermercado nocturno","company":"Lidl · Jerez Este","sector":"Retail","salary":1380,"difficulty":"easy","barrier":"baja","barrierScore":1,"diffScore":1,"star":false,"ciudad":"Jerez","nocarro":false,"lat":36.6950,"lng":-6.1100,"verified":true,"desc":"Reponedor/a turno nocturno en Lidl Jerez. 22:00-06:00. Plus nocturnidad incluido. Contrato a 30h con posibilidad de ampliación.","transferable":"Sin requisitos específicos.","tags":["✓ Verificado","Turno noche","Lidl","Plus nocturnidad"]},
+{"id":89,"title":"Técnico/a radiología — sustitución","company":"Hospital San Juan de Dios · Jerez","sector":"Sanidad","salary":1800,"difficulty":"hard","barrier":"alta","barrierScore":3,"diffScore":3,"star":true,"ciudad":"Jerez","nocarro":false,"lat":36.6890,"lng":-6.1370,"verified":true,"desc":"Técnico/a en radiodiagnóstico para cubrir bajas y vacaciones. Titulación TSID o equivalente requerida. Centro privado concertado en Jerez.","transferable":"Entorno hospitalario, trabajo con pacientes, protocolos clínicos — perfil sanitario esencial.","tags":["✓ Verificado","Titulación TSID","Hospital","Sustitución"]},
+{"id":90,"title":"Asistente personal (LAPAD)","company":"Junta de Andalucía · Jerez","sector":"Atención sociosanitaria","salary":1240,"difficulty":"easy","barrier":"baja","barrierScore":1,"diffScore":1,"star":true,"ciudad":"Jerez","nocarro":false,"lat":36.6820,"lng":-6.1340,"verified":true,"desc":"Asistente personal para persona con discapacidad reconocida. Financiado por LAPAD. Horario negociable. Alta en Seguridad Social desde el primer día.","transferable":"Cuidados personales, autonomía del paciente — perfil enfermería idóneo.","tags":["✓ Verificado","LAPAD","Negociable","Alta SS día 1"]},
+{"id":91,"title":"Oficial/a 1ª panadería industrial","company":"Bimbo · Dos Hermanas","sector":"Alimentación","salary":1700,"difficulty":"easy","barrier":"baja","barrierScore":1,"diffScore":1,"star":false,"ciudad":"Sevilla","nocarro":false,"lat":37.2890,"lng":-5.9220,"verified":true,"desc":"Oficial/a 1ª en línea de producción de panadería industrial Bimbo. Turnos rotativos. Contrato indefinido. Empresa multinacional con plan de carrera.","transferable":"Trabajo en cadena, control de calidad, APPCC — protocolos aplicables desde sanidad.","tags":["✓ Verificado","Indefinido","Bimbo","Plan de carrera"]}
+,{"id":92,"title":"Auxiliar enfermería residencia","company":"Orpea · Jerez de la Frontera","sector":"Sanidad","salary":1480,"difficulty":"easy","barrier":"baja","barrierScore":1,"diffScore":1,"star":true,"ciudad":"Jerez","nocarro":false,"lat":36.6840,"lng":-6.1310,"verified":true,"desc":"Auxiliar de enfermería en residencia de mayores Orpea Jerez. Turnos de 8h rotativos mañana/tarde/noche. Grupo multinacional con 115.000 empleados en Europa.","transferable":"Cuidados básicos, higiene, movilización de pacientes — transferencia directa.","tags":["✓ Verificado","Orpea","Turnos rotativos","Indefinido"]}
+,{"id":93,"title":"Dependiente/a parafarmacia","company":"Parafarmacias Arenal · Jerez Centro","sector":"Sanidad","salary":1300,"difficulty":"easy","barrier":"baja","barrierScore":1,"diffScore":1,"star":true,"ciudad":"Jerez","nocarro":true,"lat":36.6863,"lng":-6.1366,"verified":true,"desc":"Dependiente/a en parafarmacia céntrica de Jerez. Atención al cliente, asesoramiento en productos de salud y belleza. L-V + sábados mañana.","transferable":"Conocimiento sanitario, trato con pacientes, farmacología básica — perfil enfermería ideal.","tags":["✓ Verificado","Centro Jerez","L-V+sáb","Sanidad"]}
+,{"id":94,"title":"Operador/a call center DIGI","company":"DIGI Spain · Sevilla","sector":"Telecomunicaciones","salary":1400,"difficulty":"easy","barrier":"baja","barrierScore":1,"diffScore":1,"star":true,"ciudad":"Sevilla","nocarro":true,"lat":37.3890,"lng":-5.9812,"verified":true,"desc":"Atención al cliente para DIGI, operadora líder en crecimiento en España. Formación remunerada desde el primer día. Turno de mañana o tarde. Contrato indefinido desde inicio.","transferable":"Escucha activa, empatía, comunicación bajo presión — aptitudes enfermería esenciales.","tags":["✓ Verificado","DIGI","Indefinido","Formación pagada"]}
+,{"id":95,"title":"Cajero/a supermercado Mercadona","company":"Mercadona · Jerez","sector":"Retail","salary":1460,"difficulty":"easy","barrier":"baja","barrierScore":1,"diffScore":1,"star":false,"ciudad":"Jerez","nocarro":false,"lat":36.6970,"lng":-6.1390,"verified":true,"desc":"Cajero/a en Mercadona Jerez. Atención al cliente, cobro, reposición. Contrato indefinido. Empresa mejor valorada por sus empleados en España según Great Place to Work 2024.","transferable":"Sin experiencia previa necesaria — empresa forma desde cero.","tags":["✓ Verificado","Indefinido","Mercadona","GPTW 2024"]}
+,{"id":96,"title":"Auxiliar administrativo/a SEPE","company":"SEPE · Jerez de la Frontera","sector":"Adm. Pública","salary":1600,"difficulty":"medium","barrier":"media","barrierScore":2,"diffScore":2,"star":true,"ciudad":"Jerez","nocarro":true,"lat":36.6855,"lng":-6.1378,"verified":true,"desc":"Auxiliar administrativo en la Oficina de Empleo del SEPE en Jerez. Atención al ciudadano, tramitación de prestaciones. Oposición cuerpo general auxiliar.","transferable":"Trato con personas en situación vulnerable, empatía, gestión documental — experiencia sanitaria valorable.","tags":["✓ Verificado","Oposición","Empleo público","Jerez"]}
+,{"id":97,"title":"Técnico/a PRL (prevención)","company":"Grupo Preving · Jerez y provincia","sector":"Prevención","salary":1900,"difficulty":"medium","barrier":"media","barrierScore":2,"diffScore":2,"star":true,"ciudad":"Jerez","nocarro":false,"lat":36.6895,"lng":-6.1285,"verified":true,"desc":"Técnico/a de Prevención de Riesgos Laborales en Jerez y alrededores. Visitas a empresas, evaluaciones de riesgo. Master PRL requerido o Master + Grado en Ciencias de la Salud.","transferable":"Grado sanitario + Master PRL (online ~1.500€) = acceso directo. Salida excelente para enfermería.","tags":["✓ Verificado","Master PRL","Preving","Salida enfermería"]}
+,{"id":98,"title":"Celador/a hospital bolsa SAS","company":"SAS · Hospital de Jerez","sector":"Sanidad","salary":1380,"difficulty":"easy","barrier":"baja","barrierScore":1,"diffScore":1,"star":true,"ciudad":"Jerez","nocarro":false,"lat":36.6905,"lng":-6.1255,"verified":true,"desc":"Celador/a en el Hospital de Jerez. Acceso por bolsa de empleo del SAS. Traslado de pacientes, control de accesos, apoyo logístico en planta.","transferable":"Entorno hospitalario, trabajo con pacientes, protocolo sanitario — perfil enfermería con acceso directo.","tags":["✓ Verificado","SAS bolsa","Hospital Jerez","Sanidad pública"]}
+,{"id":99,"title":"Oficial/a embotellado González Byass","company":"González Byass · Jerez","sector":"Alimentación","salary":1650,"difficulty":"easy","barrier":"baja","barrierScore":1,"diffScore":1,"star":false,"ciudad":"Jerez","nocarro":false,"lat":36.6875,"lng":-6.1425,"verified":true,"desc":"Oficial/a en línea de embotellado de las bodegas González Byass (Tío Pepe). Turnos rotativos. Empresa emblemática de Jerez con 180 años de historia y plan de carrera interno.","transferable":"Trabajo en cadena, higiene industrial, control de calidad.","tags":["✓ Verificado","González Byass","Tío Pepe","Embotellado"]}
+,{"id":100,"title":"Agente inmobiliario/a","company":"RE/MAX · Jerez de la Frontera","sector":"Inmobiliaria","salary":1800,"difficulty":"easy","barrier":"baja","barrierScore":1,"diffScore":1,"star":true,"ciudad":"Jerez","nocarro":false,"lat":36.6858,"lng":-6.1340,"verified":true,"desc":"Agente inmobiliario en Jerez. Fijo + comisiones altas. Formación completa a cargo de la empresa. No se requiere experiencia previa. Perfil de personas bienvenido.","transferable":"Empatía, escucha activa, acompañamiento en decisiones importantes — esencia del perfil sanitario.","tags":["✓ Verificado","RE/MAX","Fijo+Comisiones","Sin experiencia"]}
+,{"id":101,"title":"Administrativo/a hospital privado","company":"HLA Inmaculada · Sevilla","sector":"Sanidad","salary":1450,"difficulty":"easy","barrier":"baja","barrierScore":1,"diffScore":1,"star":true,"ciudad":"Sevilla","nocarro":true,"lat":37.3792,"lng":-5.9930,"verified":true,"desc":"Administrativo/a de admisiones y citas en hospital privado HLA en Sevilla. Atención al paciente, gestión de citas, facturación a aseguradoras. L-V jornada completa.","transferable":"Terminología médica, trato con pacientes, gestión de urgencias — transferencia directa desde enfermería.","tags":["✓ Verificado","Hospital HLA","L-V","Entorno sanitario"]}
+,{"id":102,"title":"Operario/a producción Airbus","company":"Airbus · San Pablo Sevilla","sector":"Aeronáutica","salary":1900,"difficulty":"medium","barrier":"media","barrierScore":2,"diffScore":2,"star":false,"ciudad":"Sevilla","nocarro":false,"lat":37.4180,"lng":-5.8930,"verified":true,"desc":"Operario/a de producción en planta Airbus Sevilla. Montaje de estructuras, trabajo con planos técnicos. ETT con posibilidad de indefinido. Una de las mejores empresas para trabajar en Sevilla.","transferable":"Atención al detalle, trabajo con protocolos estrictos, responsabilidad — habilidades de entorno sanitario.","tags":["✓ Verificado","Airbus","ETT→Indefinido","Aeronáutica"]}
+,{"id":103,"title":"Supervisor/a turno logística","company":"XPO Logistics · Sevilla","sector":"Logística","salary":2000,"difficulty":"medium","barrier":"media","barrierScore":2,"diffScore":2,"star":true,"ciudad":"Sevilla","nocarro":false,"lat":37.3150,"lng":-5.9650,"verified":true,"desc":"Supervisor/a de turno en almacén XPO Logistics en Sevilla. Gestión de equipo de 10-20 personas, control de KPIs, resolución de incidencias. Valorable grado universitario.","transferable":"Liderazgo de equipos bajo presión, toma de decisiones, gestión de protocolos — mando sanitario aplicado a logística.","tags":["✓ Verificado","XPO Logistics","Mando equipo","2.000 €/mes"]}
+,{"id":104,"title":"Camarero/a Hotel Barceló","company":"Barceló Hotels · Jerez","sector":"Hostelería","salary":1400,"difficulty":"easy","barrier":"baja","barrierScore":1,"diffScore":1,"star":false,"ciudad":"Jerez","nocarro":false,"lat":36.6845,"lng":-6.1285,"verified":true,"desc":"Camarero/a de sala y bar para el Hotel Barceló Jerez. Grupos de congresos y eventos. Posibilidad de fijo-discontinuo o fijo. Empresa multinacional hotelera con +270 hoteles en el mundo.","transferable":"Trabajo bajo presión, servicio a personas, trabajo en equipo.","tags":["✓ Verificado","Barceló Hotels","Eventos","Multinacional"]}
+,{"id":105,"title":"Técnico/a emergencias sanitarias","company":"Ambulancias Tenorio · Jerez","sector":"Sanidad","salary":1550,"difficulty":"medium","barrier":"media","barrierScore":2,"diffScore":2,"star":true,"ciudad":"Jerez","nocarro":false,"lat":36.6900,"lng":-6.1300,"verified":true,"desc":"TES (Técnico en Emergencias Sanitarias) para ambulancias en Jerez y provincia. Título TES o TCAE con experiencia en emergencias. Turnos 12h. Empresa con contratos directos con el 061.","transferable":"Primeros auxilios avanzados, triaje, gestión de emergencias — núcleo de la formación sanitaria.","tags":["✓ Verificado","TES / TCAE","Turnos 12h","061"]}
+,{"id":106,"title":"Promotor/a energía solar","company":"Endesa X · Jerez y Sevilla","sector":"Energía","salary":1600,"difficulty":"easy","barrier":"baja","barrierScore":1,"diffScore":1,"star":true,"ciudad":"Jerez","nocarro":false,"lat":36.6860,"lng":-6.1355,"verified":true,"desc":"Promotor/a comercial de instalaciones solares fotovoltaicas para hogares. Fijo + comisiones muy atractivas. Formación técnica completa a cargo de la empresa. Sector en plena expansión.","transferable":"Empatía, comunicación clara, visitas a domicilio — aptitudes enfermería perfectamente aplicables.","tags":["✓ Verificado","Energía solar","Fijo+Comisión","Sector en auge"]}
+,{"id":107,"title":"Operador/a central llamadas SUMMA","company":"SUMMA 112 · Sevilla","sector":"Emergencias","salary":1700,"difficulty":"medium","barrier":"media","barrierScore":2,"diffScore":2,"star":true,"ciudad":"Sevilla","nocarro":true,"lat":37.3900,"lng":-5.9910,"verified":true,"desc":"Operador/a telefónico en central de emergencias SUMMA/112 en Sevilla. Recepción de llamadas de emergencia, despacho de recursos. Turno rotativo 24h. Titulación sanitaria muy valorada.","transferable":"Gestión de emergencias, toma de decisiones rápidas, comunicación bajo estrés — perfil enfermería ideal.","tags":["✓ Verificado","SUMMA 112","Emergencias","Sanitario valorado"]}
+
 ];
 
 /* IRPF 2024 */
@@ -1128,11 +1240,25 @@ function dlbl(d){return d==='easy'?'Fácil entrada':d==='medium'?'Entrada media'
 function renderList(jobs){
   var list=document.getElementById('jlist');
   var vis=new Set(jobs.map(function(j){return j.id;}));
-  document.getElementById('jcount').textContent=jobs.length+' empleo'+(jobs.length!==1?'s':'');
+  var countEl=document.getElementById('jcount');
+  var target=jobs.length;
+  var current=parseInt(countEl.dataset.count||'0');
+  countEl.dataset.count=target;
+  if(Math.abs(target-current)>3){
+    var step=target>current?1:-1;
+    var n=current;
+    var t=setInterval(function(){
+      n+=step;
+      countEl.textContent=n+' empleo'+(n!==1?'s':'');
+      if(n===target){clearInterval(t);}
+    },20);
+  } else {
+    countEl.textContent=target+' empleo'+(target!==1?'s':'');
+  }
   JOBS.forEach(function(job){var el=markers[job.id]&&markers[job.id].getElement();if(el)el.style.opacity=vis.has(job.id)?'1':'0.1';});
   list.innerHTML='';
   if(!jobs.length){list.innerHTML='<p style="padding:20px 12px;text-align:center;color:var(--tx3);font-size:12px">Sin ofertas para este filtro.</p>';return;}
-  jobs.forEach(function(job){
+  jobs.forEach(function(job, idx){
     var net=calcNet(job.salary);
     var isFav=!!favs[job.id];
     var hist=history_data[job.id];
@@ -1161,6 +1287,7 @@ function renderList(jobs){
       if(e.target.checked){if(compareIds.size>=4){e.target.checked=false;return;}compareIds.add(job.id);}
       else compareIds.delete(job.id);
     });
+    c.style.animationDelay = (idx * 35) + 'ms';
     list.appendChild(c);
   });
 }
@@ -1183,30 +1310,33 @@ function openDet(){
 function closeDet(){
   var det=document.getElementById('det');
   var bd=document.getElementById('det-backdrop');
+  if(!det||!det.classList.contains('open')) return;
   det.classList.remove('open');
   if(bd) bd.classList.remove('show');
-  if(isMob()) setMobView('list');
 }
 
 /* Swipe hacia abajo para cerrar el bottom sheet */
 (function(){
-  var startY=0, startScroll=0, dragging=false;
+  var startY=0, startScroll=0, dragging=false, lastDy=0;
   document.addEventListener('touchstart',function(e){
     var det=document.getElementById('det');
-    if(!det||!det.classList.contains('open')) return;
-    if(!det.contains(e.target) && e.target.id!=='det') return;
+    if(!det||!det.classList.contains('open')||!isMob()) return;
+    if(!det.contains(e.target)) return;
     startY=e.touches[0].clientY;
     startScroll=det.scrollTop;
-    dragging=true;
+    dragging=true; lastDy=0;
   },{passive:true});
   document.addEventListener('touchmove',function(e){
     if(!dragging) return;
     var det=document.getElementById('det');
     if(!det) return;
     var dy=e.touches[0].clientY-startY;
+    lastDy=dy;
     if(dy>0 && startScroll<=0){
-      det.style.transform='translateY('+Math.min(dy*0.6,180)+'px)';
+      var resistance=dy/(1+dy*0.004);
+      det.style.transform='translateY('+resistance+'px)';
       det.style.transition='none';
+      det.style.opacity=Math.max(0.5, 1-dy/400);
     }
   },{passive:true});
   document.addEventListener('touchend',function(e){
@@ -1214,15 +1344,24 @@ function closeDet(){
     dragging=false;
     var det=document.getElementById('det');
     if(!det) return;
-    var dy=e.changedTouches[0].clientY-startY;
-    det.style.transition='';
-    det.style.transform='';
-    if(dy>100 && startScroll<=0){
-      closeDet();
-      selId=null; currentJobForModals=null;
-      JOBS.forEach(function(j){if(markers[j.id])markers[j.id].setIcon(mkIcon(j,false));});
-      Object.values(markers).forEach(function(m){m.closePopup();});
-      renderList(getFiltered());
+    det.style.transition='transform .3s cubic-bezier(.22,1,.36,1), opacity .3s';
+    if(lastDy>90 && startScroll<=0){
+      det.style.transform='translateY(110%)';
+      det.style.opacity='0';
+      setTimeout(function(){
+        det.style.transform='';
+        det.style.opacity='';
+        det.style.transition='';
+        closeDet();
+        selId=null; currentJobForModals=null;
+        JOBS.forEach(function(j){if(markers[j.id])markers[j.id].setIcon(mkIcon(j,false));});
+        Object.values(markers).forEach(function(m){m.closePopup();});
+        renderList(getFiltered());
+      }, 280);
+    } else {
+      det.style.transform='';
+      det.style.opacity='';
+      setTimeout(function(){det.style.transition='';},300);
     }
   },{passive:true});
 })();
@@ -2394,7 +2533,169 @@ function admToast(msg,type){
   el.style.opacity='1'; clearTimeout(_toastT);
   _toastT=setTimeout(function(){el.style.opacity='0';},2800);
 }
+
+/* ══════════════════════════════════════════════
+   TUTORIAL GUIADO
+══════════════════════════════════════════════ */
+var TUT_STEPS = [
+  {
+    emoji:'👋',
+    title:'Bienvenido/a a Labora',
+    body:'Esta app te ayuda a encontrar trabajo en Jerez y Sevilla. Te voy a enseñar todo en 30 segundos.',
+    target:null
+  },
+  {
+    emoji:'📋',
+    title:'La lista de empleos',
+    body:'Aquí ves todos los trabajos disponibles. Cada tarjeta muestra el salario bruto y neto estimado después de impuestos.',
+    target:'jlist',
+    side:'bottom'
+  },
+  {
+    emoji:'🔖',
+    title:'Filtros rápidos',
+    body:'Filtra por ciudad, dificultad de acceso o si encaja con tu titulación. El orden por defecto es de mayor a menor salario.',
+    target:'mob-filter-bar',
+    side:'bottom'
+  },
+  {
+    emoji:'🗺️',
+    title:'Vista de mapa',
+    body:'Toca aquí para ver todos los empleos en el mapa. Cada marcador es un puesto — su color indica si es fácil (verde), medio (naranja) o requiere formación (morado).',
+    target:'mob-tab-map',
+    side:'bottom'
+  },
+  {
+    emoji:'👆',
+    title:'Selecciona un trabajo',
+    body:'Toca cualquier tarjeta de la lista. Se abrirá el mapa con el trabajo marcado y un panel con todos los detalles, salario neto, descripción y botones de acción.',
+    target:'jlist',
+    side:'bottom'
+  },
+  {
+    emoji:'🤖',
+    title:'Herramientas de IA',
+    body:'Dentro de cada trabajo tienes: Carta IA para generar tu carta de presentación, Entrevista IA para practicar antes de ir, y Analizar para ver si la oferta encaja contigo.',
+    target:null
+  },
+  {
+    emoji:'❤️',
+    title:'Favoritos y seguimiento',
+    body:'Guarda trabajos con el corazón y llévalos a tu tablero Kanban: Guardado → CV enviado → Entrevista → Rechazado.',
+    target:'mob-nav-fav',
+    side:'top'
+  },
+  {
+    emoji:'📄',
+    title:'Prepárate para conseguirlo',
+    body:'Desde el panel de cada trabajo también puedes generar tu CV, practicar la negociación salarial, hacer el checklist antes de la entrevista y llevar un diario de tu búsqueda.',
+    target:null
+  },
+  {
+    emoji:'✅',
+    title:'¡Ya sabes usar Labora!',
+    body:'Los empleos se actualizan automáticamente. Pulsa el botón ❓ en cualquier momento para volver a ver este tutorial.',
+    target:null
+  }
+];
+
+var tutIdx = 0;
+
+function startTutorial(){
+  tutIdx = 0;
+  var ov = document.getElementById('tut-overlay');
+  ov.classList.add('active');
+  showTutStep(0);
+}
+
+function showTutStep(i){
+  var step = TUT_STEPS[i];
+  if(!step){ endTutorial(); return; }
+
+  // Build card HTML
+  var dots = TUT_STEPS.map(function(_,j){
+    return '<div class="tut-dot'+(j===i?' act':'')+'"></div>';
+  }).join('');
+
+  var isLast = i >= TUT_STEPS.length - 1;
+  document.getElementById('tut-card').innerHTML =
+    '<div class="tut-emoji">'+step.emoji+'</div>'
+    +'<div class="tut-step">Paso '+(i+1)+' de '+TUT_STEPS.length+'</div>'
+    +'<div class="tut-title">'+step.title+'</div>'
+    +'<div class="tut-body">'+step.body+'</div>'
+    +'<div class="tut-dots">'+dots+'</div>'
+    +'<div class="tut-btns">'
+      +(i>0?'<button class="tut-skip" onclick="tutPrev()">← Atrás</button>':'<button class="tut-skip" onclick="endTutorial()">Saltar</button>')
+      +'<button class="tut-next" onclick="tutNext()">'+(isLast?'¡Empezar! 🚀':'Siguiente →')+'</button>'
+    +'</div>';
+
+  // Position hole and card
+  var hole = document.getElementById('tut-hole');
+  var card = document.getElementById('tut-card');
+
+  if(step.target){
+    var el = document.getElementById(step.target);
+    if(el){
+      var r = el.getBoundingClientRect();
+      var pad = 8;
+      hole.style.cssText = 'left:'+(r.left-pad)+'px;top:'+(r.top-pad)+'px;width:'+(r.width+pad*2)+'px;height:'+(r.height+pad*2)+'px;border-radius:12px;display:block';
+      // Position card above or below
+      var cardH = 260;
+      var spaceBelow = window.innerHeight - r.bottom - 16;
+      var spaceAbove = r.top - 16;
+      var cardTop;
+      if(step.side==='top' || spaceAbove > cardH){
+        cardTop = Math.max(8, r.top - cardH - 16);
+      } else {
+        cardTop = r.bottom + pad + 12;
+      }
+      cardTop = Math.min(cardTop, window.innerHeight - cardH - 16);
+      card.style.cssText = 'top:'+cardTop+'px;left:50%;transform:translateX(-50%)';
+    } else {
+      centerCard(hole, card);
+    }
+  } else {
+    centerCard(hole, card);
+  }
+}
+
+function centerCard(hole, card){
+  hole.style.display = 'none';
+  card.style.cssText = 'top:50%;left:50%;transform:translate(-50%,-50%)';
+}
+
+function tutNext(){
+  tutIdx++;
+  if(tutIdx >= TUT_STEPS.length){ endTutorial(); return; }
+  showTutStep(tutIdx);
+}
+function tutPrev(){
+  if(tutIdx > 0){ tutIdx--; showTutStep(tutIdx); }
+}
+function endTutorial(){
+  document.getElementById('tut-overlay').classList.remove('active');
+  localStorage.setItem('labora_tut_done','1');
+}
+
+// Auto-show on first visit
+window.addEventListener('load', function(){
+  setTimeout(function(){
+    if(!localStorage.getItem('labora_tut_done')){
+      startTutorial();
+    }
+  }, 1200);
+});
 </script>
+
+<!-- TUTORIAL OVERLAY -->
+<div id="tut-overlay">
+  <div id="tut-hole"></div>
+  <div id="tut-card"></div>
+</div>
+
+<!-- Tutorial button always visible -->
+<button id="tut-btn" onclick="startTutorial()" title="Tutorial">❓</button>
+
 </body>
 </html>
 <div id="adm-overlay" style="display:none;position:fixed;inset:0;z-index:2000;background:var(--bg);flex-direction:column;overflow:hidden">
