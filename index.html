@@ -1990,11 +1990,12 @@ document.getElementById('btn-restart-interview').addEventListener('click',functi
 /* MODAL HELPERS */
 function openModal(id){document.getElementById(id).classList.add('open');}
 function closeModal(id){document.getElementById(id).classList.remove('open');}
-document.querySelectorAll('[data-close]').forEach(function(btn){
-  btn.addEventListener('click',function(){closeModal(btn.dataset.close);});
-});
-document.querySelectorAll('.modal-overlay').forEach(function(overlay){
-  overlay.addEventListener('click',function(e){if(e.target===overlay)overlay.classList.remove('open');});
+/* Delegación — funciona para todos los modales, incluidos los añadidos después */
+document.addEventListener('click', function(e){
+  var btn = e.target.closest('[data-close]');
+  if(btn) closeModal(btn.dataset.close);
+  /* Cerrar también al tocar el fondo del overlay */
+  if(e.target.classList.contains('modal-overlay')) e.target.classList.remove('open');
 });
 
 /* FILTER / SORT CONTROLS */
