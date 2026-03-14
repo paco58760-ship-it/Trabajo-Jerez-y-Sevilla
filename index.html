@@ -582,6 +582,42 @@ button,a,[onclick]{touch-action:manipulation;-webkit-tap-highlight-color:transpa
     box-shadow:0 -20px 70px rgba(0,0,0,.75),0 -1px 0 rgba(255,255,255,.06) !important;
     will-change:transform;
   }
+  /* Pantalla completa cuando viene de la lista */
+  #det.fullscreen{
+    top:0 !important;
+    bottom:0 !important;
+    max-height:100% !important;
+    border-radius:0 !important;
+    border:none !important;
+    padding:0 16px calc(16px + env(safe-area-inset-bottom)) !important;
+    padding-top:calc(env(safe-area-inset-top) + 0px) !important;
+    animation:fadein .28s ease !important;
+    overflow-y:auto !important;
+    display:flex !important;
+    flex-direction:column !important;
+    box-shadow:none !important;
+  }
+  /* En fullscreen ocultar el tirador y mostrar la X grande */
+  #det.fullscreen::before{ display:none !important; }
+  #det.fullscreen #det-x{
+    display:flex !important;
+    position:sticky !important;
+    top:calc(env(safe-area-inset-top) + 12px) !important;
+    margin-left:auto !important;
+    margin-bottom:8px !important;
+    width:36px !important; height:36px !important;
+    border-radius:50% !important;
+    background:var(--sur2) !important;
+    border:1px solid var(--brd2) !important;
+    font-size:16px !important; color:var(--tx) !important;
+    cursor:pointer !important;
+    align-items:center !important; justify-content:center !important;
+    flex-shrink:0 !important;
+    z-index:10 !important;
+    box-shadow:0 2px 8px rgba(0,0,0,.3) !important;
+    transition:transform .15s, background .15s !important;
+  }
+  #det.fullscreen #det-x:active{ transform:scale(.88) !important; background:var(--brd) !important; }
   #det.closing{
     animation:slidedown .28s cubic-bezier(.4,0,.6,1) forwards !important;
   }
@@ -1045,6 +1081,7 @@ function calcNet(g){
 
 /* STATE */
 var map,markers={},selId=null,filt='all',srt='salary',compareIds=new Set();
+var detSource='list'; // 'list' o 'map'
 var history_data=JSON.parse(localStorage.getItem('jez_history')||'{}');
 var favs=JSON.parse(localStorage.getItem('jez_favs')||'{}');
 var chatHistory=[],currentJobForModals=null;
@@ -1213,7 +1250,7 @@ function buildMarkers(){
     var m=L.marker([job.lat,job.lng],{icon:mkIcon(job,false)});
     var net=calcNet(job.salary);
     m.bindPopup('<div class="p-ttl">'+job.title+'</div><div class="p-gr">'+job.salary.toLocaleString('es-ES')+' €/mes</div><div class="p-nt">~'+net.toLocaleString('es-ES')+' € neto</div>',{offset:L.point(0,-2),closeButton:false});
-    m.on('click',function(){selectJob(job.id);});
+    m.on('click',function(){selectJobFromMap(job.id);});
     m.addTo(map);
     markers[job.id]=m;
   });
@@ -1300,27 +1337,49 @@ function timeAgo(ts){
 }
 
 /* DET HELPERS */
-function openDet(){
-  var det=document.getElementById('det');
-  var bd=document.getElementById('det-backdrop');
-  det.classList.add('open');
-  det.scrollTop=0;
-  if(isMob() && bd) bd.classList.add('show');
+function openDet(source){
+  detSource = source || 'list';
+  var det = document.getElementById('det');
+  var bd  = document.getElementById('det-backdrop');
+  det.scrollTop = 0;
+  if(isMob() && detSource === 'list'){
+    det.classList.add('fullscreen');
+    det.classList.remove('open');
+    // pequeño tick para que la animación arranque desde fuera
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){
+        det.classList.add('open');
+      });
+    });
+    if(bd) bd.classList.remove('show');
+  } else {
+    det.classList.remove('fullscreen');
+    det.classList.add('open');
+    if(isMob() && bd) bd.classList.add('show');
+  }
 }
 function closeDet(){
-  var det=document.getElementById('det');
-  var bd=document.getElementById('det-backdrop');
-  if(!det||!det.classList.contains('open')) return;
-  det.classList.remove('open');
+  var det = document.getElementById('det');
+  var bd  = document.getElementById('det-backdrop');
+  if(!det || !det.classList.contains('open')) return;
+  det.classList.remove('open','fullscreen');
   if(bd) bd.classList.remove('show');
+  if(isMob() && detSource === 'list'){
+    setMobView('list');
+  }
+  selId = null; currentJobForModals = null;
+  JOBS.forEach(function(j){if(markers[j.id])markers[j.id].setIcon(mkIcon(j,false));});
+  Object.values(markers).forEach(function(m){m.closePopup();});
+  renderList(getFiltered());
 }
 
-/* Swipe hacia abajo para cerrar el bottom sheet */
+/* Swipe hacia abajo para cerrar el bottom sheet (solo en modo mapa, no fullscreen) */
 (function(){
   var startY=0, startScroll=0, dragging=false, lastDy=0;
   document.addEventListener('touchstart',function(e){
     var det=document.getElementById('det');
     if(!det||!det.classList.contains('open')||!isMob()) return;
+    if(det.classList.contains('fullscreen')) return; // no swipe en fullscreen
     if(!det.contains(e.target)) return;
     startY=e.touches[0].clientY;
     startScroll=det.scrollTop;
@@ -1414,14 +1473,9 @@ function selectJob(id){
       +'<a href="https://www.linkedin.com/jobs/search/?keywords='+q+'&location='+ql+'" target="_blank" rel="noopener" class="d-apply-btn li">LinkedIn</a>'
       +'<a href="https://www.infojobs.net/ofertas-trabajo/palabras-clave-'+encodeURIComponent(job.title.toLowerCase().replace(/\s+/g,'-'))+'" target="_blank" rel="noopener" class="d-apply-btn sec">InfoJobs</a>'
     +'</div>';
-  openDet();
+  openDet('list');
   if(isMob()){
-    setMobView('map', function(){
-      if(map){
-        map.flyTo([job.lat,job.lng],16,{duration:.85,easeLinearity:.35});
-        setTimeout(function(){if(markers[id])markers[id].openPopup();},950);
-      }
-    });
+    // Desde lista: pantalla completa. NO cambiar a mapa.
   } else {
     if(map){
       map.flyTo([job.lat,job.lng],16,{duration:.85,easeLinearity:.35});
@@ -1431,13 +1485,61 @@ function selectJob(id){
   renderList(getFiltered());
 }
 
+/* Abrir trabajo desde marcador del mapa — bottomsheet, no vuelve a lista */
+function selectJobFromMap(id){
+  selId=id;
+  var job=JOBS.find(function(j){return j.id===id;});
+  if(!job) return;
+  history_data[id]=Date.now();
+  localStorage.setItem('jez_history',JSON.stringify(history_data));
+  JOBS.forEach(function(j){if(markers[j.id]) markers[j.id].setIcon(mkIcon(j,j.id===id));});
+  Object.values(markers).forEach(function(m){m.closePopup();});
+  document.querySelectorAll('.jcard').forEach(function(c){c.classList.toggle('active',+c.dataset.id===id);});
+  currentJobForModals=job;
+  // Rellena el mismo det-body que selectJob
+  var net=calcNet(job.salary);
+  var irpf=Math.round((1-net/job.salary)*100);
+  var etags=(job.tags||[]).map(function(t){return '<span class="tag t-ex">'+t+'</span>';}).join('');
+  var city=job.ciudad||'Jerez de la Frontera';
+  var q=encodeURIComponent(job.title),ql=encodeURIComponent(city);
+  var applyUrl=job.applyUrl||('https://es.indeed.com/jobs?q='+q+'&l='+ql);
+  var isFav=!!favs[id];
+  document.getElementById('det-body').innerHTML=
+    '<div class="dsal-row"><div class="d-gross">'+job.salary.toLocaleString('es-ES')+' €<small style="font-size:11px;font-weight:400;color:var(--tx3)"> bruto</small></div><div class="d-net-w"><span class="d-net-l">Neto estimado</span><span class="d-net-v">~'+net.toLocaleString('es-ES')+' €/mes</span></div></div>'
+    +'<div class="irpf-n">IRPF efectivo ~'+irpf+'% · Tramos estatales España 2024'+(job.verified?' · <span style="color:var(--easy)">✓ Oferta verificada</span>':' · <span style="color:var(--tx3)">Empresa real, vacante sin fecha exacta</span>')+'</div>'
+    +'<div class="d-ttl">'+job.title+'</div>'
+    +'<div class="d-co">'+job.company+' · '+job.sector+'</div>'
+    +'<div class="d-tags"><span class="tag t-'+job.difficulty+'">'+dlbl(job.difficulty)+'</span><span class="tag t-bar">Barrera: '+job.barrier+'</span>'+(job.star?'<span class="tag t-star">★ Tu titulación</span>':'')+etags+'</div>'
+    +'<div class="d-desc">'+job.desc+'</div>'
+    +(job.transferable?'<div class="d-tr"><strong>Habilidades transferibles</strong>'+job.transferable+'</div>':'')
+    +'<div class="d-actions">'
+      +'<button class="d-act-btn ai" onclick="openLetterModal()">✉️ Carta IA</button>'
+      +'<button class="d-act-btn interview" onclick="openInterviewModal()">💬 Entrevista IA</button>'
+      +'<button class="d-act-btn travel" onclick="openTravelModal()">🗺️ Trayecto</button>'
+      +'<button class="d-act-btn travel" onclick="openReconModal()">🧭 Reconversión</button>'
+      +'<button class="d-act-btn favbtn '+(isFav?'saved':'')+'" id="det-fav-btn" onclick="toggleFavFromDet('+id+')"><span id="det-fav-icon">'+(isFav?'❤️':'🤍')+'</span> '+(isFav?'Guardado':'Guardar')+'</button>'
+      +'<button class="d-act-btn" style="background:#1a2a3a;color:#7ab8e8;border:1px solid #2a3a5a" onclick="openCVModal()">📄 Mi CV</button>'
+      +'<button class="d-act-btn" style="background:#1a2f1a;color:#5dba7a;border:1px solid #2a4a2a" onclick="openSalaryModal()">💰 Negociar</button>'
+      +'<button class="d-act-btn" style="background:#2a2a1a;color:#c8a840;border:1px solid #4a4a1a" onclick="openChecklistModal()">✅ Checklist</button>'
+      +'<button class="d-act-btn" style="background:#2a1a3a;color:#a070e8;border:1px solid #3a2a5a" onclick="openSkillsModal()">🧠 Test</button>'
+      +'<button class="d-act-btn" style="background:#1a2a2a;color:#40b8b8;border:1px solid #1a4a4a" onclick="openDiaryModal()">📓 Diario</button>'
+    +'</div>'
+    +'<div id="ai-analysis-inline" style="display:none"></div>'
+    +'<button onclick="analyzeJobAI()" id="analyze-btn" style="width:100%;background:var(--sur2);border:1px solid var(--brd2);border-radius:10px;padding:9px;font-size:12px;color:var(--tx3);cursor:pointer;margin-bottom:8px;font-family:\'DM Sans\',sans-serif">🔍 Analizar oferta con IA</button>'
+    +'<div class="d-apply-row">'
+      +'<a href="'+applyUrl+'" target="_blank" rel="noopener" class="d-apply-btn primary">⭐ '+(job.applyUrl?'Ver oferta':'Buscar en Indeed')+'</a>'
+      +'<a href="https://www.linkedin.com/jobs/search/?keywords='+q+'&location='+ql+'" target="_blank" rel="noopener" class="d-apply-btn li">LinkedIn</a>'
+      +'<a href="https://www.infojobs.net/ofertas-trabajo/palabras-clave-'+encodeURIComponent(job.title.toLowerCase().replace(/\s+/g,'-'))+'" target="_blank" rel="noopener" class="d-apply-btn sec">InfoJobs</a>'
+    +'</div>';
+  openDet('map');
+  if(map){
+    map.flyTo([job.lat,job.lng],16,{duration:.85,easeLinearity:.35});
+    setTimeout(function(){if(markers[id])markers[id].openPopup();},950);
+  }
+}
+
 document.getElementById('det-x').addEventListener('click',function(){
   closeDet();
-  selId=null;currentJobForModals=null;
-  JOBS.forEach(function(j){if(markers[j.id]) markers[j.id].setIcon(mkIcon(j,false));});
-  Object.values(markers).forEach(function(m){m.closePopup();});
-  if(map) map.flyTo([36.95,-6.06],9,{duration:.8});
-  renderList(getFiltered());
 });
 /* FAVORITES */
 var FAV_COLS=['Guardado','CV enviado','Entrevista','Rechazado'];
@@ -1916,33 +2018,36 @@ document.getElementById('sort-sel').addEventListener('change',function(e){srt=e.
    Sin borrar datos del usuario (localStorage)
 ══════════════════════════════════════════════ */
 (function(){
-  // Versión actual embebida en el HTML — GitHub la cambia con cada commit
-  var CURRENT = document.currentScript ? document.currentScript.src : '';
-  
-  // Estrategia: al abrir la app, pedir la página con ?v=timestamp al servidor
-  // Si el contenido es distinto al guardado, recargar (sin borrar localStorage)
+  // VERSIÓN — cambia este número cada vez que subas algo a GitHub
+  // Así el móvil detecta el cambio al instante
+  var APP_VERSION = '2026031401';
+
+  var stored = localStorage.getItem('labora_version');
+  if(stored && stored !== APP_VERSION){
+    // Hay versión nueva — limpiar caché y recargar
+    localStorage.setItem('labora_version', APP_VERSION);
+    // Forzar recarga limpia saltándose toda caché del navegador
+    var bust = window.location.href.split('?')[0] + '?v=' + APP_VERSION;
+    window.location.replace(bust);
+    return;
+  }
+  localStorage.setItem('labora_version', APP_VERSION);
+
+  // También comprobar en segundo plano por si acaso
   function checkForUpdate(){
-    var url = window.location.href.split('?')[0] + '?_=' + Date.now();
-    fetch(url, {cache:'no-store', headers:{'Cache-Control':'no-cache'}})
+    var bust = window.location.href.split('?')[0] + '?_chk=' + Date.now();
+    fetch(bust, {cache:'no-store', headers:{'Cache-Control':'no-cache','Pragma':'no-cache'}})
       .then(function(r){ return r.text(); })
       .then(function(html){
-        var key = 'labora_html_hash';
-        // Hash simple: longitud + primeros 200 chars del <script>
-        var snippet = html.substring(html.indexOf('<script'), html.indexOf('<script') + 200);
-        var hash = snippet.length + '_' + snippet.split('').reduce(function(a,c){return a+c.charCodeAt(0);},0);
-        var saved = localStorage.getItem(key);
-        if(saved && saved !== hash){
-          localStorage.setItem(key, hash);
-          // Recargar limpiando caché de navegador pero sin tocar localStorage
-          window.location.href = window.location.href.split('?')[0] + '?updated=' + Date.now();
-        } else {
-          localStorage.setItem(key, hash);
+        // Buscar el APP_VERSION embebido en el HTML descargado
+        var match = html.match(/APP_VERSION\s*=\s*'([^']+)'/);
+        if(match && match[1] !== APP_VERSION){
+          localStorage.setItem('labora_version', match[1]);
+          window.location.replace(window.location.href.split('?')[0] + '?v=' + match[1]);
         }
       }).catch(function(){});
   }
-  
-  // Comprobar al abrir (con pequeño delay para no bloquear el arranque)
-  setTimeout(checkForUpdate, 3000);
+  setTimeout(checkForUpdate, 4000);
 })();
 
 window.addEventListener('load', async function(){
