@@ -1700,6 +1700,41 @@ document.querySelectorAll('.fbtn[data-f]').forEach(function(b){
 document.getElementById('sort-sel').addEventListener('change',function(e){srt=e.target.value;renderList(getFiltered());});
 
 
+/* ══════════════════════════════════════════════
+   AUTO-UPDATE — comprueba GitHub cada vez que
+   se abre la app y recarga si hay nueva versión
+   Sin borrar datos del usuario (localStorage)
+══════════════════════════════════════════════ */
+(function(){
+  // Versión actual embebida en el HTML — GitHub la cambia con cada commit
+  var CURRENT = document.currentScript ? document.currentScript.src : '';
+  
+  // Estrategia: al abrir la app, pedir la página con ?v=timestamp al servidor
+  // Si el contenido es distinto al guardado, recargar (sin borrar localStorage)
+  function checkForUpdate(){
+    var url = window.location.href.split('?')[0] + '?_=' + Date.now();
+    fetch(url, {cache:'no-store', headers:{'Cache-Control':'no-cache'}})
+      .then(function(r){ return r.text(); })
+      .then(function(html){
+        var key = 'labora_html_hash';
+        // Hash simple: longitud + primeros 200 chars del <script>
+        var snippet = html.substring(html.indexOf('<script'), html.indexOf('<script') + 200);
+        var hash = snippet.length + '_' + snippet.split('').reduce(function(a,c){return a+c.charCodeAt(0);},0);
+        var saved = localStorage.getItem(key);
+        if(saved && saved !== hash){
+          localStorage.setItem(key, hash);
+          // Recargar limpiando caché de navegador pero sin tocar localStorage
+          window.location.href = window.location.href.split('?')[0] + '?updated=' + Date.now();
+        } else {
+          localStorage.setItem(key, hash);
+        }
+      }).catch(function(){});
+  }
+  
+  // Comprobar al abrir (con pequeño delay para no bloquear el arranque)
+  setTimeout(checkForUpdate, 3000);
+})();
+
 window.addEventListener('load', async function(){
   var cfg = JSON.parse(localStorage.getItem('labora_adm_cfg')||'{}');
   var hasBin = !!(cfg.binId || JSONBIN_ID);
