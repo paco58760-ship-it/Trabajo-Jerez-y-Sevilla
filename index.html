@@ -553,30 +553,36 @@ button,a,[onclick]{touch-action:manipulation;-webkit-tap-highlight-color:transpa
   #mob-map-exit.visible{display:flex}
   #mob-map-exit:active{transform:scale(.88);background:var(--acc-bg)}
 
-  /* Det panel — bottom sheet fijo, visible en lista Y en mapa */
+  /* ── DET BOTTOM SHEET — sobre el mapa en móvil ── */
   #det{
     position:fixed !important;
-    bottom:calc(68px + env(safe-area-inset-bottom)) !important;
-    left:0 !important;right:0 !important;
+    bottom:0 !important;
+    left:0 !important;
+    right:0 !important;
     width:100% !important;
-    max-height:75vh !important;
-    overflow-y:auto;
+    max-height:82vh !important;
+    overflow-y:auto !important;
     border-radius:20px 20px 0 0 !important;
     border:none !important;
     border-top:1px solid var(--brd2) !important;
-    z-index:950 !important;
-    padding:6px 16px calc(16px + env(safe-area-inset-bottom)) !important;
-    animation:slideup .22s ease !important;
+    z-index:960 !important;
+    padding:0 16px calc(24px + env(safe-area-inset-bottom)) !important;
+    animation:slideup .28s cubic-bezier(.25,1,.35,1) !important;
     -webkit-overflow-scrolling:touch;
-    box-shadow:0 -4px 30px rgba(0,0,0,.5) !important;
+    box-shadow:0 -12px 48px rgba(0,0,0,.65) !important;
   }
   #det::before{
-    content:'';display:block;width:44px;height:4px;border-radius:2px;
-    background:var(--brd);margin:6px auto 12px;flex-shrink:0;
+    content:'';
+    display:block;
+    width:36px;height:4px;
+    border-radius:2px;
+    background:var(--brd2);
+    margin:12px auto 16px;
+    position:sticky;top:0;
   }
-  #det-x{
-    display:none !important;
-  }
+  #det-x{ display:none !important; }
+  /* Sin backdrop — el mapa hace de fondo */
+  #det-backdrop{ display:none !important; }
 
   /* Recon */
   .api-warn{font-size:13px;padding:12px 14px;border-radius:12px}
@@ -720,10 +726,10 @@ button,a,[onclick]{touch-action:manipulation;-webkit-tap-highlight-color:transpa
 </div>
 
 <!-- DET PANEL — fuera del mwrap para que sea visible en lista Y en mapa -->
-<div id="det-backdrop" onclick="document.getElementById('det-x').click()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:949"></div>
+<div id="det-backdrop" onclick="closeDet();selId=null;currentJobForModals=null;JOBS.forEach(function(j){if(markers[j.id])markers[j.id].setIcon(mkIcon(j,false));});Object.values(markers).forEach(function(m){m.closePopup();});renderList(getFiltered())"></div>
 <div id="det">
   <button id="det-x" aria-label="Cerrar">✕</button>
-  <div id="det-close-mob" onclick="document.getElementById('det-x').click()" style="display:none;position:absolute;top:14px;right:14px;width:32px;height:32px;border-radius:50%;background:var(--sur3);border:none;font-size:16px;color:var(--tx2);cursor:pointer;align-items:center;justify-content:center;z-index:10">✕</div>
+
   <div id="det-body"></div>
 </div>
 
@@ -1170,22 +1176,56 @@ function timeAgo(ts){
 function openDet(){
   var det=document.getElementById('det');
   var bd=document.getElementById('det-backdrop');
-  var cm=document.getElementById('det-close-mob');
   det.classList.add('open');
   det.scrollTop=0;
-  if(isMob()){
-    if(bd) bd.style.display='block';
-    if(cm) cm.style.display='flex';
-  }
+  if(isMob() && bd) bd.classList.add('show');
 }
 function closeDet(){
   var det=document.getElementById('det');
   var bd=document.getElementById('det-backdrop');
-  var cm=document.getElementById('det-close-mob');
   det.classList.remove('open');
-  if(bd) bd.style.display='none';
-  if(cm) cm.style.display='none';
+  if(bd) bd.classList.remove('show');
+  if(isMob()) setMobView('list');
 }
+
+/* Swipe hacia abajo para cerrar el bottom sheet */
+(function(){
+  var startY=0, startScroll=0, dragging=false;
+  document.addEventListener('touchstart',function(e){
+    var det=document.getElementById('det');
+    if(!det||!det.classList.contains('open')) return;
+    if(!det.contains(e.target) && e.target.id!=='det') return;
+    startY=e.touches[0].clientY;
+    startScroll=det.scrollTop;
+    dragging=true;
+  },{passive:true});
+  document.addEventListener('touchmove',function(e){
+    if(!dragging) return;
+    var det=document.getElementById('det');
+    if(!det) return;
+    var dy=e.touches[0].clientY-startY;
+    if(dy>0 && startScroll<=0){
+      det.style.transform='translateY('+Math.min(dy*0.6,180)+'px)';
+      det.style.transition='none';
+    }
+  },{passive:true});
+  document.addEventListener('touchend',function(e){
+    if(!dragging) return;
+    dragging=false;
+    var det=document.getElementById('det');
+    if(!det) return;
+    var dy=e.changedTouches[0].clientY-startY;
+    det.style.transition='';
+    det.style.transform='';
+    if(dy>100 && startScroll<=0){
+      closeDet();
+      selId=null; currentJobForModals=null;
+      JOBS.forEach(function(j){if(markers[j.id])markers[j.id].setIcon(mkIcon(j,false));});
+      Object.values(markers).forEach(function(m){m.closePopup();});
+      renderList(getFiltered());
+    }
+  },{passive:true});
+})();
 
 /* SELECT JOB */
 function selectJob(id){
@@ -1237,11 +1277,10 @@ function selectJob(id){
     +'</div>';
   openDet();
   if(isMob()){
-    // En móvil: ir directamente al mapa con el panel de detalle abierto encima
     setMobView('map', function(){
       if(map){
         map.flyTo([job.lat,job.lng],16,{duration:.85,easeLinearity:.35});
-        setTimeout(function(){if(markers[id]) markers[id].openPopup();},950);
+        setTimeout(function(){if(markers[id])markers[id].openPopup();},950);
       }
     });
   } else {
@@ -1261,7 +1300,6 @@ document.getElementById('det-x').addEventListener('click',function(){
   if(map) map.flyTo([36.95,-6.06],9,{duration:.8});
   renderList(getFiltered());
 });
-
 /* FAVORITES */
 var FAV_COLS=['Guardado','CV enviado','Entrevista','Rechazado'];
 var FAV_COLORS=['#3dba6f','#5090e0','#f0a040','#e05a4a'];
@@ -1852,9 +1890,8 @@ function viewCurrentJobOnMap(){
 function exitMapView(){
   closeDet();
   selId=null; currentJobForModals=null;
-  JOBS.forEach(function(j){if(markers[j.id]) markers[j.id].setIcon(mkIcon(j,false));});
+  JOBS.forEach(function(j){if(markers[j.id])markers[j.id].setIcon(mkIcon(j,false));});
   Object.values(markers).forEach(function(m){m.closePopup();});
-  setMobView('list');
   renderList(getFiltered());
 }
 
