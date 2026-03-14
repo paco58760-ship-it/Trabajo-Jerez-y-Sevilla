@@ -1237,7 +1237,13 @@ function selectJob(id){
     +'</div>';
   openDet();
   if(isMob()){
-    // Det panel abre como bottom sheet sobre la lista
+    // En móvil: ir directamente al mapa con el panel de detalle abierto encima
+    setMobView('map', function(){
+      if(map){
+        map.flyTo([job.lat,job.lng],16,{duration:.85,easeLinearity:.35});
+        setTimeout(function(){if(markers[id]) markers[id].openPopup();},950);
+      }
+    });
   } else {
     if(map){
       map.flyTo([job.lat,job.lng],16,{duration:.85,easeLinearity:.35});
@@ -1844,10 +1850,12 @@ function viewCurrentJobOnMap(){
   });
 }
 function exitMapView(){
+  closeDet();
+  selId=null; currentJobForModals=null;
+  JOBS.forEach(function(j){if(markers[j.id]) markers[j.id].setIcon(mkIcon(j,false));});
+  Object.values(markers).forEach(function(m){m.closePopup();});
   setMobView('list');
-  if(currentJobForModals){
-    setTimeout(function(){ openDet(); },150);
-  }
+  renderList(getFiltered());
 }
 
 /* ══════════════════════════════════════════════
