@@ -99,6 +99,7 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--bg);colo
 #map{width:100%;height:100%;background:#18191f}
 .dark-tiles{filter:invert(100%) hue-rotate(180deg) brightness(88%) contrast(88%) saturate(.7)}
 #det{position:absolute;bottom:14px;left:14px;width:min(470px,calc(100% - 28px));background:var(--sur);border:1px solid var(--brd2);border-radius:14px;box-shadow:var(--sh-lg);padding:15px 17px 13px;z-index:600;display:none;animation:pu .17s ease}
+@keyframes slideup{from{transform:translateY(100%);opacity:0}to{transform:translateY(0);opacity:1}}
 @keyframes pu{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 #det.open{display:block}
 #det-x{position:absolute;top:10px;right:11px;width:24px;height:24px;border-radius:50%;background:var(--sur2);border:none;font-size:13px;color:var(--tx2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .1s}
@@ -226,7 +227,7 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--bg);colo
 #mob-view-tabs{display:none}
 #mob-bar{display:none}
 #mob-bottom-nav{display:none}
-#mob-map-close-det{display:none}
+
 
 button,a,[onclick]{touch-action:manipulation;-webkit-tap-highlight-color:transparent;}
 
@@ -535,37 +536,80 @@ button,a,[onclick]{touch-action:manipulation;-webkit-tap-highlight-color:transpa
   }
   .mob-nav-badge.show{display:flex}
 
-  /* Map back */
-  #mob-map-back{
-    position:absolute;top:14px;left:14px;z-index:500;
-    background:var(--sur);border:1px solid var(--brd2);
-    border-radius:12px;padding:10px 16px;
-    font-family:'DM Sans',sans-serif;
-    font-size:13px;font-weight:600;color:var(--tx);cursor:pointer;
-    box-shadow:var(--sh);display:none;min-height:44px;
-    display:flex;align-items:center;gap:6px
-  }
-  #mob-map-back.visible{display:flex}
-
-  /* Close X en el mapa — aparece al seleccionar un empleo */
-  #mob-map-close-det{
-    position:absolute;top:14px;right:14px;z-index:601;
-    width:44px;height:44px;border-radius:50%;
-    background:var(--sur);border:1.5px solid var(--brd2);
-    box-shadow:0 2px 12px rgba(0,0,0,.5);
-    font-size:18px;color:var(--tx);cursor:pointer;
+  /* X para salir del mapa */
+  #mob-map-exit{
+    position:absolute;top:16px;right:16px;z-index:700;
+    width:52px;height:52px;border-radius:50%;
+    background:var(--sur);border:2px solid var(--brd2);
+    box-shadow:0 4px 20px rgba(0,0,0,.7);
+    font-size:22px;color:var(--tx);cursor:pointer;
     display:none;align-items:center;justify-content:center;
     transition:transform .15s,background .15s;
-    font-weight:300;line-height:1
+    font-weight:500;line-height:1
   }
-  #mob-map-close-det.visible{display:flex}
-  #mob-map-close-det:active{transform:scale(.88);background:var(--sur2)}
+  #mob-map-exit.visible{display:flex}
+  #mob-map-exit:active{transform:scale(.88);background:var(--acc-bg)}
+
+  /* Det panel as bottom sheet on mobile */
+  #det{
+    position:fixed !important;
+    bottom:calc(68px + env(safe-area-inset-bottom));
+    left:0;right:0;
+    width:100% !important;
+    max-height:72vh;
+    overflow-y:auto;
+    border-radius:18px 18px 0 0 !important;
+    border:none !important;
+    border-top:1px solid var(--brd2) !important;
+    z-index:902 !important;
+    padding:14px 16px calc(16px + env(safe-area-inset-bottom)) !important;
+    animation:slideup .22s ease !important;
+    -webkit-overflow-scrolling:touch;
+  }
+  #det::before{
+    content:'';display:block;width:40px;height:4px;border-radius:2px;
+    background:var(--brd);margin:0 auto 14px;
+  }
 
   /* Recon */
   .api-warn{font-size:13px;padding:12px 14px;border-radius:12px}
 }
+/* ── NEW FEATURES CSS ── */
+.feat-modal .fi{margin-bottom:10px}
+.feat-modal label{font-size:12px;color:var(--tx3);display:block;margin-bottom:4px}
+.feat-modal input,.feat-modal select,.feat-modal textarea{width:100%;background:var(--sur2);border:1px solid var(--brd2);border-radius:8px;padding:8px 10px;font-size:13px;color:var(--tx);font-family:'DM Sans',sans-serif;box-sizing:border-box}
+.feat-modal textarea{min-height:70px;resize:vertical}
+.cv-preview{background:white;color:#222;padding:20px;border-radius:8px;font-family:Arial,sans-serif;font-size:12px;line-height:1.6;margin-top:10px;max-height:300px;overflow-y:auto}
+.cv-preview h1{font-size:18px;margin:0 0 4px;color:#111}
+.cv-preview h2{font-size:13px;color:#c42e1e;border-bottom:1px solid #ddd;padding-bottom:3px;margin:10px 0 5px;text-transform:uppercase;letter-spacing:.5px}
+.cv-preview .cv-contact{font-size:11px;color:#555;margin-bottom:8px}
+@media print{body > *:not(#cv-print-area){display:none!important}#cv-print-area{display:block!important;position:fixed;top:0;left:0;width:100%;z-index:9999;background:white;padding:30px}}
+.checklist-item{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--brd)}
+.checklist-item:last-child{border-bottom:none}
+.checklist-item input[type=checkbox]{width:18px;height:18px;flex-shrink:0;margin-top:1px;accent-color:var(--acc)}
+.checklist-item label{font-size:13px;color:var(--tx);cursor:pointer;line-height:1.4}
+.checklist-item label.done{text-decoration:line-through;color:var(--tx3)}
+.skills-q{margin-bottom:16px}
+.skills-q p{font-size:13px;font-weight:600;color:var(--tx);margin:0 0 8px}
+.skills-opt{display:flex;gap:6px;flex-wrap:wrap}
+.skills-opt button{background:var(--sur2);border:1px solid var(--brd2);border-radius:8px;padding:6px 12px;font-size:12px;color:var(--tx);cursor:pointer;transition:all .15s}
+.skills-opt button.sel{background:var(--acc);color:white;border-color:var(--acc)}
+.skills-result{background:var(--sur2);border-radius:10px;padding:12px;margin-top:8px}
+.skills-result h4{margin:0 0 6px;font-size:14px;color:var(--tx)}
+.skills-bar{height:8px;border-radius:4px;background:var(--brd);overflow:hidden;margin-bottom:2px}
+.skills-bar-fill{height:100%;border-radius:4px;transition:width .4s ease}
+.diary-entry{background:var(--sur2);border-radius:10px;padding:10px 12px;margin-bottom:8px}
+.diary-entry .diary-date{font-size:10px;color:var(--tx3);margin-bottom:3px}
+.diary-entry .diary-text{font-size:13px;color:var(--tx);line-height:1.5}
+.ai-analysis-box{background:var(--sur2);border-radius:10px;padding:12px;margin-top:10px;border-left:3px solid var(--acc)}
+.ai-analysis-box h4{margin:0 0 6px;font-size:13px;color:var(--acc)}
+.ai-tag{display:inline-block;background:var(--sur3);border:1px solid var(--brd2);border-radius:6px;padding:2px 8px;font-size:11px;color:var(--tx2);margin:2px}
+.ai-tag.green{background:#1a3a2a;color:#3dba6f;border-color:#2a5a3a}
+.ai-tag.red{background:#3a1a1a;color:#e05a4a;border-color:#5a2a2a}
+.ai-tag.blue{background:#18223a;color:var(--blu);border-color:#2a3a5a}
+.salary-score{text-align:center;font-size:28px;font-weight:700;color:var(--mid);margin:8px 0}
+.chat-wrap{height:280px;overflow-y:auto;padding:8px;background:var(--sur2);border-radius:10px;margin-bottom:10px}
 </style>
-</head>
 <body>
 <div id="hdr">
   <div id="logo" onclick="logoTap()">
@@ -610,7 +654,7 @@ button,a,[onclick]{touch-action:manipulation;-webkit-tap-highlight-color:transpa
       <svg viewBox="0 0 16 16" fill="none"><rect x="1" y="2" width="14" height="3" rx="1.5" fill="currentColor"/><rect x="1" y="7" width="14" height="3" rx="1.5" fill="currentColor"/><rect x="1" y="12" width="14" height="3" rx="1.5" fill="currentColor"/></svg>
       Lista
     </button>
-    <button class="mob-tab" id="mob-tab-map" onclick="setMobView('map')">
+    <button class="mob-tab" id="mob-tab-map" onclick="document.getElementById('det').classList.remove('open');setMobView('map')">
       <svg viewBox="0 0 16 16" fill="none"><path d="M8 1.5C5.5 1.5 3.5 3.5 3.5 6c0 3.5 4.5 8.5 4.5 8.5S12.5 9.5 12.5 6c0-2.5-2-4.5-4.5-4.5z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><circle cx="8" cy="6" r="1.5" fill="currentColor"/></svg>
       Mapa
     </button>
@@ -664,11 +708,7 @@ button,a,[onclick]{touch-action:manipulation;-webkit-tap-highlight-color:transpa
   </div>
   <div id="mwrap">
     <div id="map"></div>
-    <button id="mob-map-back" onclick="setMobView('list')">
-      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7l5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      Lista
-    </button>
-    <button id="mob-map-close-det" onclick="document.getElementById('det-x').click()">✕</button>
+    <button id="mob-map-exit" onclick="exitMapView()" title="Volver">✕</button>
     <div id="det">
       <button id="det-x" aria-label="Cerrar">✕</button>
       <div id="det-body"></div>
@@ -702,7 +742,6 @@ button,a,[onclick]{touch-action:manipulation;-webkit-tap-highlight-color:transpa
   <div class="modal-box" style="max-width:620px">
     <div class="modal-hdr"><div><h3>💬 Simulador de entrevista</h3><p id="interview-job-name">Entrevista para el puesto seleccionado</p></div><button class="modal-x" data-close="interview-modal">✕</button></div>
     <div class="modal-body">
-      <div id="interview-apikey-warn" class="api-warn" style="display:none">Para usar esta función necesitas una API key de Anthropic. <button onclick="showApiSetup()" style="background:none;border:none;color:var(--mid);cursor:pointer;text-decoration:underline;font-size:inherit">Introducir clave</button></div>
       <div class="chat-wrap" id="chat-messages"></div>
       <div class="chat-input-row">
         <input type="text" id="chat-input" inputmode="text" enterkeyhint="send" placeholder="Escribe tu respuesta..." onkeydown="if(event.key==='Enter')sendChat()"/>
@@ -879,35 +918,42 @@ function calcNet(g){
 var map,markers={},selId=null,filt='all',srt='salary',compareIds=new Set();
 var history_data=JSON.parse(localStorage.getItem('jez_history')||'{}');
 var favs=JSON.parse(localStorage.getItem('jez_favs')||'{}');
-var apiKey=localStorage.getItem('jez_apikey')||'';
 var chatHistory=[],currentJobForModals=null;
 
 /* MOBILE VIEW TOGGLE */
 var mobView='list';
 /* Detecta móvil: usa screen.width para evitar falsos negativos por zoom */
 function isMob(){return (screen.width<=700)||(window.innerWidth<=700);}
-function setMobView(v){
+function setMobView(v, onReady){
   mobView=v;
-  if(!isMob())return;
+  if(!isMob()){ if(onReady) onReady(); return; }
   var sb=document.getElementById('sb');
   var mw=document.getElementById('mwrap');
-  var back=document.getElementById('mob-map-back');
+  var exitBtn=document.getElementById('mob-map-exit');
   var tl=document.getElementById('mob-tab-list');
   var tm=document.getElementById('mob-tab-map');
   if(v==='list'){
     sb.classList.remove('mob-hidden');
     mw.classList.remove('mob-visible');
-    back.classList.remove('visible');
+    if(exitBtn) exitBtn.classList.remove('visible');
     if(tl)tl.classList.add('active');
     if(tm)tm.classList.remove('active');
+    if(onReady) onReady();
   } else {
     sb.classList.add('mob-hidden');
     mw.classList.add('mob-visible');
-    back.classList.add('visible');
+    if(exitBtn) exitBtn.classList.add('visible');
     if(tl)tl.classList.remove('active');
     if(tm)tm.classList.add('active');
-    setTimeout(function(){if(map)map.invalidateSize();},120);
-    setTimeout(function(){if(map)map.invalidateSize();},400);
+    // Asegurar mapa inicializado, luego invalidar tamaño
+    ensureMapReady();
+    setTimeout(function(){
+      if(map) map.invalidateSize();
+      setTimeout(function(){
+        if(map) map.invalidateSize();
+        if(onReady) onReady();
+      }, 300);
+    }, 100);
   }
 }
 function updateMobNavActive(){
@@ -1118,11 +1164,6 @@ function selectJob(id){
   localStorage.setItem('jez_history',JSON.stringify(history_data));
   JOBS.forEach(function(j){if(markers[j.id]) markers[j.id].setIcon(mkIcon(j,j.id===id));});
   Object.values(markers).forEach(function(m){m.closePopup();});
-  // En escritorio volar inmediatamente; en móvil se hace tras cambiar vista
-  if(!isMob()){
-    map.flyTo([job.lat,job.lng],16,{duration:.85,easeLinearity:.35});
-    setTimeout(function(){if(markers[id]) markers[id].openPopup();},550);
-  }
   document.querySelectorAll('.jcard').forEach(function(c){c.classList.toggle('active',+c.dataset.id===id);});
   var ac=document.querySelector('.jcard[data-id="'+id+'"]');
   if(ac) ac.scrollIntoView({behavior:'smooth',block:'nearest'});
@@ -1148,8 +1189,15 @@ function selectJob(id){
       +'<button class="d-act-btn travel" onclick="openTravelModal()">🗺️ Trayecto</button>'
       +'<button class="d-act-btn travel" onclick="openReconModal()">🧭 Reconversión</button>'
       +'<button class="d-act-btn favbtn '+(isFav?'saved':'')+'" id="det-fav-btn" onclick="toggleFavFromDet('+id+')"><span id="det-fav-icon">'+(isFav?'❤️':'🤍')+'</span> '+(isFav?'Guardado':'Guardar')+'</button>'
-      +'<button class="d-act-btn" style="background:var(--sur2);color:var(--blu);border:1px solid var(--brd2)" onclick="setMobView(\'map\')">🗺️ Ver en mapa</button>'
+      +'<button class="d-act-btn" style="background:var(--sur2);color:var(--blu);border:1px solid var(--brd2)" onclick="viewCurrentJobOnMap()">🗺️ Ver en mapa</button>'
+      +'<button class="d-act-btn" style="background:#1a2a3a;color:#7ab8e8;border:1px solid #2a3a5a" onclick="openCVModal()">📄 Mi CV</button>'
+      +'<button class="d-act-btn" style="background:#1a2f1a;color:#5dba7a;border:1px solid #2a4a2a" onclick="openSalaryModal()">💰 Negociar</button>'
+      +'<button class="d-act-btn" style="background:#2a2a1a;color:#c8a840;border:1px solid #4a4a1a" onclick="openChecklistModal()">✅ Checklist</button>'
+      +'<button class="d-act-btn" style="background:#2a1a3a;color:#a070e8;border:1px solid #3a2a5a" onclick="openSkillsModal()">🧠 Test</button>'
+      +'<button class="d-act-btn" style="background:#1a2a2a;color:#40b8b8;border:1px solid #1a4a4a" onclick="openDiaryModal()">📓 Diario</button>'
     +'</div>'
+    +'<div id="ai-analysis-inline" style="display:none"></div>'
+    +'<button onclick="analyzeJobAI()" id="analyze-btn" style="width:100%;background:var(--sur2);border:1px solid var(--brd2);border-radius:10px;padding:9px;font-size:12px;color:var(--tx3);cursor:pointer;margin-bottom:8px;font-family:\'DM Sans\',sans-serif">🔍 Analizar oferta con IA</button>'
     +'<div class="d-apply-row">'
       +'<a href="'+applyUrl+'" target="_blank" rel="noopener" class="d-apply-btn primary">⭐ '+(job.applyUrl?'Ver oferta':'Buscar en Indeed')+'</a>'
       +'<a href="https://www.linkedin.com/jobs/search/?keywords='+q+'&location='+ql+'" target="_blank" rel="noopener" class="d-apply-btn li">LinkedIn</a>'
@@ -1157,35 +1205,24 @@ function selectJob(id){
     +'</div>';
   document.getElementById('det').classList.add('open');
   document.getElementById('det').scrollTop=0;
-  var mcd=document.getElementById('mob-map-close-det');
   if(isMob()){
-    setMobView('map');
-    if(mcd) mcd.classList.add('visible');
-    // Doble invalidación: primera rápida para que se pinte el mapa,
-    // segunda tras la animación para que quede perfecto
-    setTimeout(function(){
-      if(map) map.invalidateSize();
-      map.flyTo([job.lat,job.lng],16,{duration:.85,easeLinearity:.35});
-      setTimeout(function(){
-        if(map) map.invalidateSize();
-        if(markers[id]) markers[id].openPopup();
-      },950);
-    }, 220);
+    // En móvil NO cambiamos a mapa automáticamente — el usuario elige con "Ver en mapa"
+    // Solo aseguramos que el detail panel está abierto en la vista lista
   } else {
-    if(mcd) mcd.classList.add('visible');
+    if(map){
+      map.flyTo([job.lat,job.lng],16,{duration:.85,easeLinearity:.35});
+      setTimeout(function(){if(markers[id]) markers[id].openPopup();},550);
+    }
   }
   renderList(getFiltered());
 }
 
 document.getElementById('det-x').addEventListener('click',function(){
   document.getElementById('det').classList.remove('open');
-  // Hide map X button
-  var mcd=document.getElementById('mob-map-close-det');
-  if(mcd) mcd.classList.remove('visible');
   selId=null;currentJobForModals=null;
   JOBS.forEach(function(j){if(markers[j.id]) markers[j.id].setIcon(mkIcon(j,false));});
   Object.values(markers).forEach(function(m){m.closePopup();});
-  map.flyTo([36.95,-6.06],9,{duration:.8});
+  if(map) map.flyTo([36.95,-6.06],9,{duration:.8});
   renderList(getFiltered());
 });
 
@@ -1477,93 +1514,162 @@ document.getElementById('btn-copy-letter').addEventListener('click',function(){
   navigator.clipboard.writeText(document.getElementById('letter-output').textContent).then(function(){document.getElementById('btn-copy-letter').textContent='✓ Copiado!';setTimeout(function(){document.getElementById('btn-copy-letter').textContent='Copiar';},2000);});
 });
 
-/* INTERVIEW SIMULATOR */
+/* ═══════════════════════════════
+   ENTREVISTA IA LOCAL — sin API key
+═══════════════════════════════ */
+var interviewState={questionCount:0,maxQuestions:5,scores:[],job:null};
+var interviewQuestions=[];
+
+var Q_BANKS={
+  default:[
+    {q:'Cuéntame sobre ti y por qué te interesa este puesto.',keywords:['experiencia','trabajo','interés','porque','motivación','formación','cambio','sector']},
+    {q:'¿Cuáles son tus principales fortalezas para este trabajo?',keywords:['organizado','empático','responsable','equipo','comunicación','resolutivo','aprender','adaptable']},
+    {q:'¿Cómo manejas situaciones de estrés o presión?',keywords:['calma','organizo','priorizo','respiro','experiencia','técnica','situación','tranquilo']},
+    {q:'¿Por qué quieres cambiar de sector o de trabajo?',keywords:['crecer','reto','aprender','oportunidad','cambio','nuevo','motivación','futuro']},
+    {q:'¿Dónde te ves dentro de 2-3 años?',keywords:['crecer','estabilidad','aprender','empresa','responsabilidad','mejorar','objetivo','meta']}
+  ],
+  atencion:[
+    {q:'Describe una situación en la que tuvieras que gestionar a una persona difícil o insatisfecha.',keywords:['escuché','calmé','solución','empatía','paciencia','resultado','resolví','actitud']},
+    {q:'¿Cómo priorizas cuando tienes varias tareas o personas que atender al mismo tiempo?',keywords:['urgencia','organizo','lista','prioridad','importante','orden','eficiente','tiempo']}
+  ],
+  admin:[
+    {q:'¿Qué herramientas digitales o de oficina manejas con soltura?',keywords:['excel','word','outlook','sistema','ordenador','digital','SAP','correo','base de datos']},
+    {q:'¿Cómo te aseguras de no cometer errores en tareas administrativas repetitivas?',keywords:['revisión','doble','compruebo','atención','orden','sistema','proceso','checklists']}
+  ],
+  almacen:[
+    {q:'¿Tienes experiencia con carretillas elevadoras, transpaletas o similares?',keywords:['carretilla','transpaleta','carnet','almacén','carga','descarga','manipulado','seguridad']},
+    {q:'¿Cómo garantizas tu seguridad y la del equipo en el almacén?',keywords:['normas','EPI','procedimiento','precaución','señalización','protocolo','seguridad','aviso']}
+  ],
+  ventas:[
+    {q:'¿Cómo reaccionas cuando un cliente potencial te dice que no?',keywords:['normal','siguiente','aprendizaje','persistente','técnica','positivo','ánimo','oportunidad']},
+    {q:'Cuéntame cuál ha sido tu mayor logro convenciendo a alguien de algo.',keywords:['conseguí','cliente','resultado','persuadí','éxito','cifra','objetivo','logré']}
+  ],
+  hosteleria:[
+    {q:'¿Cómo gestionas el ritmo durante un servicio con mucha demanda?',keywords:['rapidez','equipo','organizando','prioridades','comunicación','calma','compañeros','turno']},
+    {q:'¿Qué haces cuando un cliente está claramente insatisfecho con el servicio?',keywords:['escucho','disculpo','solución','alternativa','empatía','actitud','responsable','satisfacción']}
+  ]
+};
+
+function getInterviewQuestions(job){
+  var s=(job.sector||'').toLowerCase(), t=(job.title||'').toLowerCase();
+  var specific=[];
+  if(s.includes('atención')||s.includes('call')||t.includes('teleoper')||t.includes('receptor')||t.includes('promotor')) specific=Q_BANKS.atencion;
+  else if(s.includes('admin')||t.includes('admin')||t.includes('auxiliar admin')) specific=Q_BANKS.admin;
+  else if(s.includes('almacén')||s.includes('logíst')||t.includes('mozo')||t.includes('almacén')||t.includes('preparador')) specific=Q_BANKS.almacen;
+  else if(s.includes('venta')||t.includes('comercial')||t.includes('vendedor')||t.includes('asesor')) specific=Q_BANKS.ventas;
+  else if(s.includes('hostelería')||s.includes('turismo')||t.includes('camarero')||t.includes('recepcionista')) specific=Q_BANKS.hosteleria;
+  var result=specific.length>=2?[specific[0],specific[1],Q_BANKS.default[0],Q_BANKS.default[2],Q_BANKS.default[4]]:Q_BANKS.default.slice(0,5);
+  return result;
+}
+
+function evaluateAnswer(answer,question){
+  var wc=answer.trim().split(/\s+/).filter(Boolean).length;
+  var lScore=wc<5?1:wc<20?2:wc<=80?3:wc<=130?2.5:2;
+  var kHits=(question.keywords||[]).filter(function(k){return answer.toLowerCase().includes(k);}).length;
+  var kScore=Math.min(3,kHits);
+  var hasEx=/ejemplo|vez que|cuando|situación|concretamente|recuerdo que/i.test(answer);
+  var hasRes=/resultado|conseguí|logré|al final|pude|solucioné|funcionó/i.test(answer);
+  var hasEmo=/me gusta|disfruto|me motiva|me encanta|me apasiona/i.test(answer);
+  var bonus=(hasEx?0.5:0)+(hasRes?0.5:0)+(hasEmo?0.3:0);
+  var total=Math.max(3,Math.min(10,Math.round((lScore+kScore+bonus)*10/6)));
+  return{score:total,wc:wc,hasEx:hasEx,hasRes:hasRes,kHits:kHits};
+}
+
+function buildFeedback(ev,question){
+  var pos=[],imp=[],tips=[
+    'Usa la técnica STAR: Situación, Tarea, Acción, Resultado.',
+    'Conecta siempre tu respuesta con habilidades del puesto concreto.',
+    'Cuantifica cuando puedas: "gestioné 20 llamadas al día" es más potente que "muchas llamadas".',
+    'Prepara 2-3 ejemplos reales y adapta uno a cada pregunta.',
+    'Muestra entusiasmo genuino — el tono transmite tanto como las palabras.',
+    'Investiga la empresa antes: mencionar algo específico de ella suma muchos puntos.'
+  ];
+  if(ev.wc>=20) pos.push('Buena extensión, has desarrollado el argumento.');
+  if(ev.hasEx) pos.push('Añadir un ejemplo concreto es exactamente lo que busca un seleccionador.');
+  if(ev.hasRes) pos.push('Mencionar resultados demuestra impacto real — eso diferencia al candidato.');
+  if(ev.kHits>=2) pos.push('Usas el vocabulario adecuado para este tipo de puesto.');
+  if(pos.length===0) pos.push('Has respondido la pregunta de forma directa.');
+  if(ev.wc<15) imp.push('Respuesta muy corta — desarrolla más tu razonamiento con un ejemplo.');
+  if(!ev.hasEx) imp.push('Añade un ejemplo real: "Hubo una vez que…" hace la respuesta mucho más creíble.');
+  if(!ev.hasRes) imp.push('Termina explicando qué resultado obtuviste — el entrevistador quiere ver impacto.');
+  if(ev.kHits===0) imp.push('Intenta usar palabras clave del puesto (mira la descripción de la oferta).');
+  if(imp.length===0) imp.push('Podrías añadir datos concretos o números para ser aún más convincente.');
+  return{score:ev.score,pos:pos[0],imp:imp[0],tip:tips[Math.floor(Math.random()*tips.length)]};
+}
+
 function openInterviewModal(){
-  if(!currentJobForModals)return;
-  document.getElementById('interview-job-name').textContent='Entrevistador para: '+currentJobForModals.title;
-  checkApiKey('interview-apikey-warn');
-  chatHistory=[];
+  if(!currentJobForModals) return;
+  document.getElementById('interview-job-name').textContent='Entrevista para: '+currentJobForModals.title;
   document.getElementById('chat-messages').innerHTML='';
   openModal('interview-modal');
-  startInterview();
+  interviewState={questionCount:0,maxQuestions:5,scores:[],job:currentJobForModals};
+  interviewQuestions=getInterviewQuestions(currentJobForModals);
+  setTimeout(startInterviewLocal,200);
 }
-function startInterview(){
-  var job=currentJobForModals;
-  var key=apiKey||localStorage.getItem('jez_apikey');
-  if(!key)return;
-  var sysPrompt='Eres un entrevistador de recursos humanos experto realizando una entrevista real para el puesto de "'+job.title+'" en "'+job.company+'". El candidato viene del sector sanitario (enfermería) y está en transición laboral.\n\nNormas:\n1. Empieza presentándote brevemente y haciendo la primera pregunta\n2. Evalúa CADA respuesta: señala lo positivo, lo mejorable y da un consejo concreto\n3. Haz una nueva pregunta después de evaluar\n4. Adapta las preguntas al puesto específico\n5. Después de 5 preguntas, da una evaluación final con puntuación del 1 al 10 y 3 consejos clave\n6. Responde siempre en español, tono profesional pero accesible\n7. Máximo 150 palabras por respuesta';
-  chatHistory=[{role:'user',content:'[SISTEMA: Empieza la entrevista. El puesto es: '+job.title+'. Empresa: '+job.company+'. Descripción: '+job.desc+']'}];
-  callClaude(key,sysPrompt,null,true);
+
+function startInterviewLocal(){
+  var job=interviewState.job;
+  var intro='¡Hola! Soy <strong>Ana Gómez</strong>, responsable de selección en <strong>'+job.company+'</strong>.<br><br>'
+    +'Gracias por tu interés en el puesto de <strong>'+job.title+'</strong>. Haremos 5 preguntas — evaluaré cada respuesta y al final recibirás una puntuación con consejos clave.<br><br>'
+    +'¿Preparado/a? Empezamos 👇<br><br>'
+    +'<strong>Pregunta 1 de 5:</strong><br>'+interviewQuestions[0].q;
+  addChatMsgLocal('assistant',intro);
 }
+
 function sendChat(){
   var input=document.getElementById('chat-input');
   var text=input.value.trim();
-  if(!text)return;
-  var key=apiKey||localStorage.getItem('jez_apikey');
-  if(!key){showApiSetup();return;}
+  if(!text) return;
   input.value='';
-  addChatMsg('user',text);
-  chatHistory.push({role:'user',content:text});
-  callClaude(key,null,text,false);
-}
-function callClaude(key,system,userMsg,isInit){
-  var btn=document.getElementById('chat-send-btn');btn.disabled=true;
-  var msgs=chatHistory.slice();
-  if(!isInit&&userMsg)msgs.push({role:'user',content:userMsg});
-  var payload={model:'claude-sonnet-4-20250514',max_tokens:400,stream:true,messages:msgs};
-  if(system)payload.system=system;
-  var job=currentJobForModals;
-  if(isInit&&system)payload.system=system;
-  var typingEl=addChatMsg('assistant','',true);
-  fetch('https://api.anthropic.com/v1/messages',{
-    method:'POST',
-    headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-    body:JSON.stringify(payload)
-  }).then(function(r){
-    var reader=r.body.getReader(),decoder=new TextDecoder(),buffer='',fullText='';
-    typingEl.textContent='';typingEl.classList.remove('typing');
-    function read(){
-      return reader.read().then(function(chunk){
-        if(chunk.done){chatHistory.push({role:'assistant',content:fullText});btn.disabled=false;return;}
-        buffer+=decoder.decode(chunk.value,{stream:true});
-        var lines=buffer.split('\n');buffer=lines.pop();
-        lines.forEach(function(line){
-          if(!line.startsWith('data:'))return;
-          var data=line.slice(5).trim();
-          if(data==='[DONE]')return;
-          try{var p=JSON.parse(data);if(p.delta&&p.delta.text){fullText+=p.delta.text;typingEl.textContent+=p.delta.text;typingEl.scrollIntoView({block:'end'});}}catch(e){}
-        });
-        return read();
-      });
+  addChatMsgLocal('user',text);
+  var qIdx=interviewState.questionCount;
+  if(qIdx>=interviewQuestions.length) return;
+  var ev=evaluateAnswer(text,interviewQuestions[qIdx]);
+  interviewState.scores.push(ev.score);
+  interviewState.questionCount++;
+  var btn=document.getElementById('chat-send-btn');
+  btn.disabled=true;
+  setTimeout(function(){
+    var fb=buildFeedback(ev,interviewQuestions[qIdx]);
+    var isFinal=interviewState.questionCount>=interviewState.maxQuestions;
+    var html='<strong>Evaluación</strong> ('+fb.score+'/10)<br>'
+      +'✅ '+fb.pos+'<br>'
+      +'📌 <em>A mejorar:</em> '+fb.imp+'<br>'
+      +'💡 <em>Consejo:</em> '+fb.tip+'<br><br>';
+    if(isFinal){
+      var avg=Math.round(interviewState.scores.reduce(function(a,b){return a+b;},0)/interviewState.scores.length);
+      var lbl=avg>=8?'Excelente 🌟':avg>=6?'Bueno 👍':avg>=4?'Mejorable 📈':'Necesita práctica 💪';
+      html+='<hr style="border:none;border-top:1px solid var(--brd);margin:8px 0">'
+        +'<strong>🏁 EVALUACIÓN FINAL: '+avg+'/10 — '+lbl+'</strong><br><br>'
+        +'<strong>Tus 3 claves para esta entrevista:</strong><br>'
+        +'1. Prepara 2-3 ejemplos concretos de situaciones reales<br>'
+        +'2. Investiga <em>'+interviewState.job.company+'</em> antes de ir<br>'
+        +'3. Conecta siempre tus respuestas con las necesidades del puesto<br><br>'
+        +'¡Mucha suerte! Pulsa <strong>Reiniciar</strong> para volver a practicar.';
+    } else {
+      html+='<strong>Pregunta '+(interviewState.questionCount+1)+' de '+interviewState.maxQuestions+':</strong><br>'
+        +interviewQuestions[interviewState.questionCount].q;
     }
-    return read();
-  }).catch(function(e){typingEl.textContent='Error: '+e.message;btn.disabled=false;});
+    addChatMsgLocal('assistant',html);
+    btn.disabled=false;
+  },700);
 }
-function addChatMsg(role,text,typing){
+
+function addChatMsgLocal(role,html){
   var wrap=document.getElementById('chat-messages');
   var div=document.createElement('div');
-  div.className='chat-msg '+role+(typing?' typing':'');
-  div.textContent=typing?'Escribiendo...':text;
+  div.className='chat-msg '+role;
+  div.innerHTML=html;
   wrap.appendChild(div);
   div.scrollIntoView({block:'end'});
   return div;
 }
-document.getElementById('btn-restart-interview').addEventListener('click',function(){chatHistory=[];document.getElementById('chat-messages').innerHTML='';startInterview();});
 
-/* API KEY */
-function checkApiKey(warnId){
-  var key=localStorage.getItem('jez_apikey');
-  apiKey=key||'';
-  document.getElementById(warnId).style.display=key?'none':'block';
-}
-function showApiSetup(){openModal('apikey-modal');}
-document.getElementById('btn-save-apikey').addEventListener('click',function(){
-  var k=document.getElementById('apikey-input').value.trim();
-  if(!k.startsWith('sk-ant')){alert('La clave debe comenzar con sk-ant-...');return;}
-  localStorage.setItem('jez_apikey',k);apiKey=k;
-  document.querySelectorAll('.api-warn').forEach(function(el){el.style.display='none';});
-  closeModal('apikey-modal');
-  alert('Clave guardada correctamente.');
+document.getElementById('btn-restart-interview').addEventListener('click',function(){
+  document.getElementById('chat-messages').innerHTML='';
+  interviewState={questionCount:0,maxQuestions:5,scores:[],job:currentJobForModals};
+  interviewQuestions=getInterviewQuestions(currentJobForModals);
+  startInterviewLocal();
 });
 
 /* MODAL HELPERS */
@@ -1657,7 +1763,348 @@ async function autoRefresh(){
   } catch(e){}
 }
 
-/* ═══════════════════════════════
+/* ══════════════════════════════════════════════
+   MAPA — ver trabajo en mapa (móvil + escritorio)
+══════════════════════════════════════════════ */
+function viewCurrentJobOnMap(){
+  var job=currentJobForModals;
+  if(!job) return;
+  // Ocultar el panel de detalle antes de cambiar a mapa
+  document.getElementById('det').classList.remove('open');
+  setMobView('map',function(){
+    if(map){
+      map.flyTo([job.lat,job.lng],16,{duration:.85,easeLinearity:.35});
+      setTimeout(function(){if(markers[job.id])markers[job.id].openPopup();},950);
+    }
+  });
+}
+function exitMapView(){
+  // Volver a la lista y reabrir el panel de detalle si había un trabajo seleccionado
+  setMobView('list');
+  if(currentJobForModals){
+    setTimeout(function(){
+      document.getElementById('det').classList.add('open');
+      document.getElementById('det').scrollTop=0;
+    },150);
+  }
+}
+
+/* ══════════════════════════════════════════════
+   AI OFFER ANALYSIS — análisis inline sin API
+══════════════════════════════════════════════ */
+function analyzeJobAI(){
+  var job=currentJobForModals;
+  if(!job)return;
+  var btn=document.getElementById('analyze-btn');
+  var box=document.getElementById('ai-analysis-inline');
+  if(box.style.display!=='none'){box.style.display='none';btn.textContent='🔍 Analizar oferta con IA';return;}
+  btn.textContent='Analizando...';
+  setTimeout(function(){
+    var pros=[],cons=[],tips=[];
+    if(job.star) pros.push('⭐ Encaja con tu titulación');
+    if(job.nocarro) pros.push('🚌 Accesible sin coche');
+    if(job.verified) pros.push('✅ Oferta verificada');
+    if(job.difficulty==='easy') pros.push('🟢 Baja barrera de entrada');
+    if(job.salary>=1600) pros.push('💰 Salario por encima de la media del sector');
+    if(job.salary<1200) cons.push('💸 Salario por debajo del SMI + extras');
+    if(job.difficulty==='hard') cons.push('🎓 Requiere formación específica previa');
+    if(!job.verified) cons.push('⚠️ Vacante sin fecha exacta confirmada');
+    if(job.ciudad==='Sevilla'&&!job.nocarro) cons.push('🚗 Requiere desplazamiento a Sevilla');
+    if(pros.length===0) pros.push('📋 Puesto estándar del sector');
+    if(cons.length===0) cons.push('Sin inconvenientes destacados');
+    var desc=(job.desc||'').toLowerCase();
+    if(/inglés|english/i.test(desc)) tips.push('💡 Refuerza tu inglés con apps gratuitas como Duolingo antes de la entrevista');
+    if(/excel|office|informática/i.test(desc)) tips.push('💡 Haz el curso de Excel gratuito del SEPE si no lo tienes al día');
+    if(/carnet|conducir|vehículo/i.test(desc)) tips.push('💡 Confirma que tu carnet esté vigente antes de inscribirte');
+    if(job.difficulty==='medium') tips.push('💡 Destaca tus habilidades transferibles en la carta — son tu mayor activo');
+    tips.push('💡 Investiga la empresa en Google antes de la entrevista para hacer preguntas concretas');
+    var html='<div class="ai-analysis-box">'
+      +'<h4>🔍 Análisis de la oferta</h4>'
+      +'<p style="font-size:12px;color:var(--tx3);margin:0 0 8px">Basado en tu perfil y la descripción del puesto</p>'
+      +'<p style="font-size:12px;font-weight:600;color:var(--tx);margin:0 0 4px">Puntos a favor</p>'
+      +pros.map(function(p){return '<span class="ai-tag green">'+p+'</span>';}).join('')
+      +'<p style="font-size:12px;font-weight:600;color:var(--tx);margin:8px 0 4px">A tener en cuenta</p>'
+      +cons.map(function(c){return '<span class="ai-tag red">'+c+'</span>';}).join('')
+      +'<p style="font-size:12px;font-weight:600;color:var(--tx);margin:8px 0 4px">Consejos para esta oferta</p>'
+      +tips.map(function(t){return '<p style="font-size:12px;color:var(--tx2);margin:0 0 5px">'+t+'</p>';}).join('')
+      +'</div>';
+    box.innerHTML=html;
+    box.style.display='block';
+    btn.textContent='🔍 Ocultar análisis';
+  },400);
+}
+
+/* ══════════════════════════════════════════════
+   CV GENERATOR
+══════════════════════════════════════════════ */
+function openCVModal(){openModal('cv-modal');}
+function generateCV(){
+  var name=document.getElementById('cv-name').value.trim()||'Tu Nombre';
+  var title=document.getElementById('cv-title').value.trim()||'Profesional en búsqueda activa';
+  var phone=document.getElementById('cv-phone').value.trim();
+  var email=document.getElementById('cv-email').value.trim();
+  var city=document.getElementById('cv-city').value.trim();
+  var web=document.getElementById('cv-web').value.trim();
+  var profile=document.getElementById('cv-profile').value.trim();
+  var expLines=(document.getElementById('cv-exp').value.trim()||'').split('\n').filter(Boolean);
+  var eduLines=(document.getElementById('cv-edu').value.trim()||'').split('\n').filter(Boolean);
+  var skills=document.getElementById('cv-skills').value.trim();
+  var contact=[phone,email,city,web].filter(Boolean).join(' · ');
+  var expHTML=expLines.map(function(l){
+    var parts=l.split('|');
+    if(parts.length>=3) return '<p style="margin:0 0 4px"><strong>'+parts[1].trim()+'</strong> · '+parts[0].trim()+'<span style="float:right;color:#777;font-size:11px">'+parts[2].trim()+'</span></p>';
+    return '<p style="margin:0 0 4px">'+l+'</p>';
+  }).join('');
+  var eduHTML=eduLines.map(function(l){
+    var parts=l.split('|');
+    if(parts.length>=3) return '<p style="margin:0 0 4px"><strong>'+parts[0].trim()+'</strong> · '+parts[1].trim()+'<span style="float:right;color:#777;font-size:11px">'+parts[2].trim()+'</span></p>';
+    return '<p style="margin:0 0 4px">'+l+'</p>';
+  }).join('');
+  var skillsHTML=skills?skills.split(',').map(function(s){return '<span style="display:inline-block;background:#f0f0f0;border-radius:4px;padding:2px 7px;margin:2px;font-size:11px">'+s.trim()+'</span>';}).join(''):'';
+  var html='<h1>'+name+'</h1><p style="font-size:13px;color:#c42e1e;margin:0 0 3px;font-weight:600">'+title+'</p>'
+    +(contact?'<p class="cv-contact">'+contact+'</p>':'')
+    +(profile?'<h2>Perfil</h2><p>'+profile+'</p>':'')
+    +(expHTML?'<h2>Experiencia</h2>'+expHTML:'')
+    +(eduHTML?'<h2>Formación</h2>'+eduHTML:'')
+    +(skillsHTML?'<h2>Habilidades</h2><p>'+skillsHTML+'</p>':'');
+  document.getElementById('cv-preview').innerHTML=html;
+  document.getElementById('cv-preview-area').style.display='block';
+}
+function printCV(){
+  var content=document.getElementById('cv-preview').innerHTML;
+  var win=window.open('','_blank');
+  win.document.write('<html><head><title>CV</title><style>body{font-family:Arial,sans-serif;font-size:12px;padding:30px;max-width:700px;margin:auto;color:#222}h1{font-size:18px;margin:0 0 4px}h2{font-size:13px;color:#c42e1e;border-bottom:1px solid #ddd;padding-bottom:3px;margin:12px 0 5px;text-transform:uppercase;letter-spacing:.5px}.cv-contact{font-size:11px;color:#555}@media print{@page{margin:2cm}}</style></head><body>'+content+'</body></html>');
+  win.document.close();
+  setTimeout(function(){win.print();},300);
+}
+
+/* ══════════════════════════════════════════════
+   SALARY NEGOTIATION SIMULATOR
+══════════════════════════════════════════════ */
+var salarySimState={q:0,job:null,offered:0,target:0,exp:'',scores:[]};
+var SALARY_SCENARIOS=[
+  {prompt:'Buenos días. Antes de hacer una oferta formal, me gustaría saber cuáles son tus expectativas salariales para este puesto.',
+   tips:['Ancla primero con tu número objetivo','Justifica con tu experiencia','No des un rango — da tu número']},
+  {prompt:'Entiendo. El presupuesto que tenemos para este puesto es de {offered} €. ¿Cómo lo ves?',
+   tips:['No aceptes el primer número','Muestra que entiendes su limitación','Propón un punto intermedio con justificación']},
+  {prompt:'Veo que tienes experiencia relevante. Si llegamos a {mid} €, ¿podríamos cerrar el acuerdo?',
+   tips:['Evalúa si es suficiente','Considera pedir beneficios extra si el salario no sube más','Cierra con confianza si es justo']}
+];
+function openSalaryModal(){
+  if(!currentJobForModals)return;
+  document.getElementById('salary-job-name').textContent='Negociación para: '+currentJobForModals.title;
+  var el=document.getElementById('sal-offered');
+  if(el) el.value=currentJobForModals.salary;
+  resetSalaryModal();
+  openModal('salary-modal');
+}
+function resetSalaryModal(){
+  document.getElementById('salary-setup').style.display='block';
+  document.getElementById('salary-chat').style.display='none';
+  document.getElementById('salary-restart-btn').style.display='none';
+  document.getElementById('salary-messages').innerHTML='';
+  salarySimState.q=0;salarySimState.scores=[];
+}
+function startSalarySimulation(){
+  var offered=parseInt(document.getElementById('sal-offered').value)||1400;
+  var target=parseInt(document.getElementById('sal-target').value)||1600;
+  var exp=document.getElementById('sal-exp').value.trim()||'experiencia relevante';
+  salarySimState={q:0,job:currentJobForModals,offered:offered,target:target,exp:exp,scores:[]};
+  document.getElementById('salary-setup').style.display='none';
+  document.getElementById('salary-chat').style.display='block';
+  document.getElementById('salary-restart-btn').style.display='block';
+  addSalaryMsg('assistant','Soy Patricia, responsable de RRHH de <strong>'+currentJobForModals.company+'</strong>. Gracias por venir hoy.<br><br>'+SALARY_SCENARIOS[0].prompt+'<br><br><small style="color:var(--tx3)">💡 Consejo: '+SALARY_SCENARIOS[0].tips[0]+'</small>');
+}
+function sendSalaryChat(){
+  var input=document.getElementById('salary-input');
+  var text=input.value.trim();
+  if(!text)return;
+  input.value='';
+  addSalaryMsg('user',text);
+  var sc=salarySimState;
+  var score=evaluateSalaryAnswer(text,sc.q,sc.target);
+  sc.scores.push(score);
+  sc.q++;
+  setTimeout(function(){
+    if(sc.q>=SALARY_SCENARIOS.length){
+      var avg=Math.round(sc.scores.reduce(function(a,b){return a+b;},0)/sc.scores.length);
+      var result=avg>=7?'Excelente negociación 🎉':avg>=5?'Buen intento 👍':'Necesita práctica 💪';
+      addSalaryMsg('assistant','<strong>Fin de la simulación — '+result+' ('+avg+'/10)</strong><br><br>'
+        +'Claves para negociar mejor:<br>'
+        +'1. Ancla siempre con tu número primero ('+sc.target.toLocaleString('es-ES')+' €)<br>'
+        +'2. Justifica con logros concretos: "En mi anterior puesto conseguí X"<br>'
+        +'3. Si no suben el salario, pide beneficios: teletrabajo, formación, revisión a 6 meses');
+    } else {
+      var next=SALARY_SCENARIOS[sc.q];
+      var mid=Math.round((sc.offered+sc.target)/2);
+      var txt=next.prompt.replace('{offered}',sc.offered.toLocaleString('es-ES')+' €').replace('{mid}',mid.toLocaleString('es-ES')+' €');
+      addSalaryMsg('assistant',txt+'<br><br><small style="color:var(--tx3)">💡 Consejo: '+next.tips[0]+'</small>');
+    }
+  },600);
+}
+function evaluateSalaryAnswer(ans,q,target){
+  var wc=ans.trim().split(/\s+/).length;
+  var hasNum=/\d/.test(ans);
+  var hasPro=/experiencia|años|equipo|logré|conseguí|gestioné|lideré|resultado/i.test(ans);
+  var hasFlex=/podría|posible|flexible|considera|alternativa|revisión/i.test(ans);
+  var score=wc<5?3:wc<15?5:7;
+  if(hasNum) score+=1;
+  if(hasPro) score+=1;
+  if(hasFlex) score+=0.5;
+  return Math.min(10,Math.round(score));
+}
+function addSalaryMsg(role,html){
+  var wrap=document.getElementById('salary-messages');
+  var div=document.createElement('div');
+  div.className='chat-msg '+role;
+  div.innerHTML=html;
+  wrap.appendChild(div);
+  div.scrollIntoView({block:'end'});
+}
+
+/* ══════════════════════════════════════════════
+   CHECKLIST
+══════════════════════════════════════════════ */
+var CHECKLIST_BASE=[
+  'Investigar la empresa en Google (web, noticias, LinkedIn)',
+  'Confirmar dirección y cómo llegar al lugar de la entrevista',
+  'Preparar 3 preguntas para hacerle al entrevistador',
+  'Imprimir o llevar el CV actualizado en el móvil',
+  'Elegir y preparar la ropa adecuada',
+  'Practicar la respuesta a "Cuéntame sobre ti" (máximo 2 min)',
+  'Revisar la descripción de la oferta y los requisitos clave',
+  'Preparar un ejemplo de logro concreto en trabajos anteriores',
+  'Confirmar a qué hora tengo que salir de casa',
+  'Descansar bien la noche anterior'
+];
+function openChecklistModal(){
+  if(!currentJobForModals)return;
+  document.getElementById('checklist-job-name').textContent=currentJobForModals.title+' — '+currentJobForModals.company;
+  renderChecklist();
+  openModal('checklist-modal');
+}
+function renderChecklist(){
+  var key='jez_chk_'+(currentJobForModals?currentJobForModals.id:'0');
+  var saved=JSON.parse(localStorage.getItem(key)||'{}');
+  var items=CHECKLIST_BASE.slice();
+  if(currentJobForModals&&currentJobForModals.star) items.unshift('Revisar cómo presentar tu titulación universitaria como ventaja');
+  if(currentJobForModals&&currentJobForModals.ciudad==='Sevilla') items.push('Planificar ruta a Sevilla y tiempo de transporte');
+  var html=items.map(function(item,i){
+    var checked=saved['i'+i]?'checked':'';
+    return '<div class="checklist-item"><input type="checkbox" id="chk'+i+'" '+checked+' onchange="saveChecklist('+i+', this.checked)">'
+      +'<label for="chk'+i+'" class="'+(saved['i'+i]?'done':'')+'">'+item+'</label></div>';
+  }).join('');
+  document.getElementById('checklist-items').innerHTML=html;
+}
+function saveChecklist(i,v){
+  var key='jez_chk_'+(currentJobForModals?currentJobForModals.id:'0');
+  var saved=JSON.parse(localStorage.getItem(key)||'{}');
+  saved['i'+i]=v;
+  localStorage.setItem(key,JSON.stringify(saved));
+  var lbl=document.querySelector('#chk'+i+' ~ label, label[for="chk'+i+'"]');
+  if(lbl) lbl.classList.toggle('done',v);
+}
+function resetChecklist(){
+  var key='jez_chk_'+(currentJobForModals?currentJobForModals.id:'0');
+  localStorage.removeItem(key);
+  renderChecklist();
+}
+
+/* ══════════════════════════════════════════════
+   SKILLS TEST
+══════════════════════════════════════════════ */
+var SKILLS_QUESTIONS=[
+  {q:'¿Qué tipo de entorno de trabajo prefieres?',opts:['Atención directa a personas','Trabajo de oficina y gestión','Trabajo físico o en almacén','Ventas y convencer a otros']},
+  {q:'¿Cuál es tu mayor fortaleza?',opts:['Empatía y escucha activa','Organización y precisión','Fuerza física y resistencia','Comunicación y persuasión']},
+  {q:'¿Qué disponibilidad tienes para trabajar?',opts:['Solo de lunes a viernes','Turnos rotativos sin problema','Weekends también están bien','Solo media jornada']},
+  {q:'¿Qué prioriza tu búsqueda ahora mismo?',opts:['Estabilidad laboral','Aprender cosas nuevas','Buen ambiente de trabajo','Ganar lo máximo posible']},
+  {q:'¿Tienes o puedes conseguir fácilmente?',opts:['Carnet de conducir','Certificado de inglés básico','Manejo de ordenador','Ninguno especialmente']},
+];
+var skillsAnswers={};
+function openSkillsModal(){
+  skillsAnswers={};
+  renderSkillsTest();
+  openModal('skills-modal');
+}
+function renderSkillsTest(){
+  var html=SKILLS_QUESTIONS.map(function(q,qi){
+    return '<div class="skills-q"><p>'+(qi+1)+'. '+q.q+'</p><div class="skills-opt">'
+      +q.opts.map(function(o,oi){return '<button onclick="pickSkillsOpt('+qi+','+oi+',this)">'+o+'</button>';}).join('')
+      +'</div></div>';
+  }).join('');
+  document.getElementById('skills-test-area').innerHTML=html;
+  document.getElementById('skills-submit-btn').style.display='none';
+}
+function pickSkillsOpt(qi,oi,btn){
+  skillsAnswers[qi]=oi;
+  var row=btn.closest('.skills-opt');
+  row.querySelectorAll('button').forEach(function(b){b.classList.remove('sel');});
+  btn.classList.add('sel');
+  if(Object.keys(skillsAnswers).length>=SKILLS_QUESTIONS.length){
+    document.getElementById('skills-submit-btn').style.display='block';
+  }
+}
+function evaluateSkillsTest(){
+  var SECTORS=[
+    {name:'Atención al cliente / Hostelería',score:0,color:'#3dba6f'},
+    {name:'Administración y oficina',score:0,color:'#5090e0'},
+    {name:'Almacén y logística',score:0,color:'#f0a040'},
+    {name:'Ventas y comercial',score:0,color:'#e05a4a'},
+    {name:'Servicios públicos / Sector social',score:0,color:'#a070e8'}
+  ];
+  var mapping=[[0,3,2,1],[0,3,2,1],[0,1,0,0],[4,1,0,3],[0,1,2,0]];
+  Object.keys(skillsAnswers).forEach(function(qi){
+    var oi=skillsAnswers[qi];
+    var mapped=mapping[qi]?mapping[qi][oi]:0;
+    if(SECTORS[mapped]) SECTORS[mapped].score+=20;
+    if(SECTORS[(mapped+4)%5]) SECTORS[(mapped+4)%5].score+=5;
+  });
+  var sorted=SECTORS.slice().sort(function(a,b){return b.score-a.score;});
+  var html='<div class="skills-result"><h4>Tus sectores más afines</h4>'
+    +sorted.map(function(s,i){
+      var pct=Math.min(100,s.score);
+      return '<p style="font-size:12px;margin:6px 0 2px;color:var(--tx)">'+(i===0?'⭐ ':'')+s.name+'</p>'
+        +'<div class="skills-bar"><div class="skills-bar-fill" style="width:'+pct+'%;background:'+s.color+'"></div></div>';
+    }).join('')
+    +'<p style="font-size:11px;color:var(--tx3);margin-top:8px">Basado en tus respuestas. Filtra empleos en Labora usando las categorías del top.</p>'
+    +'</div>';
+  document.getElementById('skills-test-area').innerHTML=html;
+  document.getElementById('skills-submit-btn').style.display='none';
+}
+
+/* ══════════════════════════════════════════════
+   SEARCH DIARY
+══════════════════════════════════════════════ */
+function openDiaryModal(){
+  renderDiaryEntries();
+  openModal('diary-modal');
+}
+function saveDiaryEntry(){
+  var text=document.getElementById('diary-input').value.trim();
+  if(!text)return;
+  var entries=JSON.parse(localStorage.getItem('jez_diary')||'[]');
+  entries.unshift({date:new Date().toLocaleDateString('es-ES',{day:'numeric',month:'long',year:'numeric'}),text:text});
+  if(entries.length>30) entries=entries.slice(0,30);
+  localStorage.setItem('jez_diary',JSON.stringify(entries));
+  document.getElementById('diary-input').value='';
+  renderDiaryEntries();
+}
+function renderDiaryEntries(){
+  var entries=JSON.parse(localStorage.getItem('jez_diary')||'[]');
+  var html=entries.length?entries.map(function(e,i){
+    return '<div class="diary-entry"><div class="diary-date">'+e.date+'</div><div class="diary-text">'+e.text+'</div>'
+      +'<button onclick="deleteDiaryEntry('+i+')" style="background:none;border:none;color:var(--tx3);font-size:11px;cursor:pointer;margin-top:4px">✕ eliminar</button></div>';
+  }).join(''):'<p style="font-size:13px;color:var(--tx3);text-align:center;padding:20px 0">Aún no hay entradas. Empieza registrando tu actividad de hoy.</p>';
+  document.getElementById('diary-entries').innerHTML=html;
+}
+function deleteDiaryEntry(i){
+  var entries=JSON.parse(localStorage.getItem('jez_diary')||'[]');
+  entries.splice(i,1);
+  localStorage.setItem('jez_diary',JSON.stringify(entries));
+  renderDiaryEntries();
+}
+
+/* ══════════════════════════════════════════════
    ADMIN PANEL
 ═══════════════════════════════ */
 var admEditingId = null, _toastT;
@@ -1947,6 +2394,96 @@ function admToast(msg,type){
   </div>
 </div>
 
+<!-- ══ CV GENERATOR ══ -->
+<div class="modal-overlay feat-modal" id="cv-modal">
+  <div class="modal-box" style="max-width:640px">
+    <div class="modal-hdr"><div><h3>📄 Generador de CV</h3><p>Rellena y descarga tu CV listo para enviar</p></div><button class="modal-x" data-close="cv-modal">✕</button></div>
+    <div class="modal-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="fi"><label>Nombre completo</label><input id="cv-name" type="text" placeholder="Ana García López"/></div>
+        <div class="fi"><label>Profesión / título</label><input id="cv-title" type="text" placeholder="Auxiliar de enfermería en transición"/></div>
+        <div class="fi"><label>Teléfono</label><input id="cv-phone" type="tel" placeholder="612 345 678"/></div>
+        <div class="fi"><label>Email</label><input id="cv-email" type="email" placeholder="ana@email.com"/></div>
+        <div class="fi"><label>Ciudad</label><input id="cv-city" type="text" placeholder="Jerez de la Frontera"/></div>
+        <div class="fi"><label>LinkedIn / web (opcional)</label><input id="cv-web" type="text" placeholder="linkedin.com/in/anagarcia"/></div>
+      </div>
+      <div class="fi" style="margin-top:8px"><label>Perfil profesional (2-3 frases sobre ti)</label><textarea id="cv-profile" placeholder="Profesional con X años de experiencia en... Busco una oportunidad en... Mis principales fortalezas son..."></textarea></div>
+      <div class="fi"><label>Experiencia laboral (un puesto por línea: Empresa | Cargo | Años)</label><textarea id="cv-exp" placeholder="Hospital La Paz | Auxiliar de enfermería | 2018-2024&#10;Clínica Santa Ana | Cuidadora | 2015-2018"></textarea></div>
+      <div class="fi"><label>Formación (una por línea: Título | Centro | Año)</label><textarea id="cv-edu" placeholder="Técnico en Cuidados Auxiliares de Enfermería | IES San Juan | 2015&#10;Bachillerato | IES Los Olivos | 2012"></textarea></div>
+      <div class="fi"><label>Habilidades (separadas por comas)</label><input id="cv-skills" type="text" placeholder="Atención al cliente, trabajo en equipo, inglés B1, Office, carnet B"/></div>
+      <div id="cv-preview-area" style="display:none">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin:10px 0 4px"><span style="font-size:12px;color:var(--tx3)">Vista previa</span><button onclick="printCV()" style="background:var(--acc);color:white;border:none;border-radius:8px;padding:6px 14px;font-size:12px;cursor:pointer;font-weight:600">⬇ Descargar PDF</button></div>
+        <div class="cv-preview" id="cv-preview"></div>
+      </div>
+    </div>
+    <div class="modal-foot"><button class="btn-sec" data-close="cv-modal">Cerrar</button><button class="btn-primary" onclick="generateCV()">Generar CV</button></div>
+  </div>
+</div>
+
+<!-- ══ SALARY SIMULATOR ══ -->
+<div class="modal-overlay feat-modal" id="salary-modal">
+  <div class="modal-box" style="max-width:560px">
+    <div class="modal-hdr"><div><h3>💰 Simulador de negociación</h3><p id="salary-job-name">Practica cómo pedir subida de sueldo</p></div><button class="modal-x" data-close="salary-modal">✕</button></div>
+    <div class="modal-body">
+      <div id="salary-setup" style="">
+        <p style="font-size:13px;color:var(--tx2);margin:0 0 12px">Configura la simulación para practicar la negociación salarial de este puesto.</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+          <div class="fi"><label>Salario ofertado (€/mes bruto)</label><input id="sal-offered" type="number" value="1400" style="font-size:16px!important"/></div>
+          <div class="fi"><label>Tu objetivo (€/mes bruto)</label><input id="sal-target" type="number" value="1600" style="font-size:16px!important"/></div>
+        </div>
+        <div class="fi"><label>Tu experiencia más relevante para este puesto</label><input id="sal-exp" type="text" placeholder="Ej: 6 años en atención al cliente, lideré equipo de 5 personas"/></div>
+        <button class="btn-primary" onclick="startSalarySimulation()" style="width:100%;margin-top:8px">Empezar simulación</button>
+      </div>
+      <div id="salary-chat" style="display:none">
+        <div class="chat-wrap" id="salary-messages"></div>
+        <div class="chat-input-row">
+          <input type="text" id="salary-input" inputmode="text" placeholder="Tu respuesta..." onkeydown="if(event.key==='Enter')sendSalaryChat()"/>
+          <button class="chat-send" onclick="sendSalaryChat()">Enviar</button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot"><button class="btn-sec" data-close="salary-modal">Cerrar</button><button class="btn-sec" id="salary-restart-btn" style="display:none" onclick="resetSalaryModal()">Reiniciar</button></div>
+  </div>
+</div>
+
+<!-- ══ CHECKLIST ══ -->
+<div class="modal-overlay" id="checklist-modal">
+  <div class="modal-box" style="max-width:480px">
+    <div class="modal-hdr"><div><h3>✅ Checklist de entrevista</h3><p id="checklist-job-name">Lista de preparación</p></div><button class="modal-x" data-close="checklist-modal">✕</button></div>
+    <div class="modal-body">
+      <p style="font-size:12px;color:var(--tx3);margin:0 0 10px">Marca cada paso antes de la entrevista. Se guarda automáticamente.</p>
+      <div id="checklist-items"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-sec" data-close="checklist-modal">Cerrar</button>
+      <button class="btn-sec" onclick="resetChecklist()">Limpiar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SKILLS TEST ══ -->
+<div class="modal-overlay" id="skills-modal">
+  <div class="modal-box" style="max-width:520px">
+    <div class="modal-hdr"><div><h3>🧠 Test de habilidades</h3><p>Descubre qué sectores encajan con tu perfil</p></div><button class="modal-x" data-close="skills-modal">✕</button></div>
+    <div class="modal-body">
+      <div id="skills-test-area"></div>
+    </div>
+    <div class="modal-foot"><button class="btn-sec" data-close="skills-modal">Cerrar</button><button class="btn-primary" id="skills-submit-btn" onclick="evaluateSkillsTest()" style="display:none">Ver resultados</button></div>
+  </div>
+</div>
+
+<!-- ══ DIARY ══ -->
+<div class="modal-overlay" id="diary-modal">
+  <div class="modal-box" style="max-width:480px">
+    <div class="modal-hdr"><div><h3>📓 Diario de búsqueda</h3><p>Registra tu actividad diaria</p></div><button class="modal-x" data-close="diary-modal">✕</button></div>
+    <div class="modal-body">
+      <div class="fi"><label>¿Qué has hecho hoy en tu búsqueda?</label><textarea id="diary-input" placeholder="Hoy he enviado el CV a 2 empresas, he practicado la entrevista para el puesto de... y he actualizado mi LinkedIn." style="min-height:80px"></textarea></div>
+      <button class="btn-primary" onclick="saveDiaryEntry()" style="width:100%;margin-bottom:14px">Guardar entrada</button>
+      <div id="diary-entries"></div>
+    </div>
+    <div class="modal-foot"><button class="btn-sec" data-close="diary-modal">Cerrar</button></div>
+  </div>
+</div>
+
 <!-- Toast -->
 <div id="adm-toast" style="position:fixed;bottom:calc(24px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);background:var(--sur3);border:1px solid var(--brd2);border-radius:999px;padding:10px 20px;font-size:13px;font-weight:500;color:var(--tx);box-shadow:0 4px 20px rgba(0,0,0,.5);z-index:3000;white-space:nowrap;opacity:0;transition:opacity .2s;pointer-events:none"></div>
-
